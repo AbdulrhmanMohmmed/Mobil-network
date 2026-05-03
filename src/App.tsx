@@ -1,13 +1,11 @@
-import { useState, useCallback } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { BRANDS, Operation } from "./data/operations";
 import { ConsolePanel, LogEntry } from "./components/ConsolePanel";
 import { OperationButton } from "./components/OperationButton";
 import { DeviceInfoBar } from "./components/DeviceInfoBar";
 import { CopyButton } from "./components/CopyButton";
 import { ScanPanel, ScanResult, generateFakeScanResult } from "./components/ScanPanel";
-import { DownloadProjectButton } from "./components/DownloadProjectButton";
-import { GitHubProjectButton } from "./components/GitHubProjectButton";
-import { Smartphone, Zap, Clock, ScanLine } from "lucide-react";
+import { Smartphone, Zap, Clock, ScanLine, Search, Star, Filter, History, Languages, Grid2x2, Menu } from "lucide-react";
 
 let logId = 1;
 function now() {
@@ -23,38 +21,46 @@ const DEVICE_MODELS = [
 ];
 
 const BRAND_ICONS: Record<string, string> = {
-  general:  "⚙️",
-  frp:      "🛡️",
+  general: "⚙️",
+  frp: "🛡️",
   qualcomm: "🔴",
-  mtk:      "🟠",
-  samsung:  "🔵",
-  xiaomi:   "🟠",
-  huawei:   "🔴",
-  oppo:     "🟢",
-  tecno:    "💙",
-  vivo:     "🟣",
-  nokia:    "📘",
+  mtk: "🟠",
+  samsung: "🔵",
+  xiaomi: "🟠",
+  huawei: "🔴",
+  oppo: "🟢",
+  tecno: "💙",
+  vivo: "🟣",
+  nokia: "📘",
 };
 
+type Lang = "ar" | "en";
+
 export default function App() {
-  const [activeBrandId, setActiveBrandId]   = useState("general");
-  const [activeGroupId, setActiveGroupId]   = useState<string | null>(null);
+  const [activeBrandId, setActiveBrandId] = useState("general");
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
+  const [lang, setLang] = useState<Lang>("ar");
+  const [compactView, setCompactView] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([
     { id: logId++, time: now(), type: "system", text: "Yemen Mobile Dev Tool v2.0 — تهيئة النظام..." },
     { id: logId++, time: now(), type: "system", text: "اضغط 'اتصال ADB' لتوصيل جهازك عبر USB، أو اختر عملية لتنفيذها مباشرةً" },
-    { id: logId++, time: now(), type: "info",   text: "يمن موبايل 421/02 · سبأفون 421/01 · يونيتل 421/04 · هيتس 421/03" },
+    { id: logId++, time: now(), type: "info", text: "يمن موبايل 421/02 · سبأفون 421/01 · يونيتل 421/04 · هيتس 421/03" },
   ]);
-  const [connected,      setConnected]      = useState(false);
-  const [connecting,     setConnecting]     = useState(false);
-  const [deviceModel,    setDeviceModel]    = useState("");
+  const [connected, setConnected] = useState(false);
+  const [connecting, setConnecting] = useState(false);
+  const [deviceModel, setDeviceModel] = useState("");
   const [androidVersion, setAndroidVersion] = useState("");
-  const [serialNo,       setSerialNo]       = useState("");
-  const [runningOpId,    setRunningOpId]    = useState<string | null>(null);
-  const [selectedOp,     setSelectedOp]     = useState<Operation | null>(null);
-  const [opsRun,         setOpsRun]         = useState(0);
-  const [scanning,       setScanning]       = useState(false);
-  const [scanResult,     setScanResult]     = useState<ScanResult | null>(null);
-  const [showScan,       setShowScan]       = useState(false);
+  const [serialNo, setSerialNo] = useState("");
+  const [runningOpId, setRunningOpId] = useState<string | null>(null);
+  const [selectedOp, setSelectedOp] = useState<Operation | null>(null);
+  const [opsRun, setOpsRun] = useState(0);
+  const [scanning, setScanning] = useState(false);
+  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
+  const [showScan, setShowScan] = useState(false);
+  const [query, setQuery] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [showOnlyFavs, setShowOnlyFavs] = useState(false);
+  const [lastOps, setLastOps] = useState<Operation[]>([]);
 
   const addLog = useCallback((type: LogEntry["type"], text: string) => {
     setLogs((prev) => [...prev, { id: logId++, time: now(), type, text }]);
@@ -63,16 +69,16 @@ export default function App() {
   const handleConnect = () => {
     if (connecting || connected) return;
     setConnecting(true);
-    addLog("cmd",  "adb kill-server && adb start-server");
+    addLog("cmd", "adb kill-server && adb start-server");
     setTimeout(() => addLog("cmd", "adb devices"), 300);
     setTimeout(() => {
-      const model   = DEVICE_MODELS[Math.floor(Math.random() * DEVICE_MODELS.length)];
+      const model = DEVICE_MODELS[Math.floor(Math.random() * DEVICE_MODELS.length)];
       const android = `${Math.floor(Math.random() * 4) + 10}.0`;
-      const sdk     = Math.floor(Math.random() * 6) + 30;
-      const serial  = Math.random().toString(36).substring(2, 12).toUpperCase();
+      const sdk = Math.floor(Math.random() * 6) + 30;
+      const serial = Math.random().toString(36).substring(2, 12).toUpperCase();
       addLog("success", `جهاز متصل: ${model}`);
-      addLog("info",    `Android ${android} | SDK ${sdk} | Serial: ${serial}`);
-      addLog("info",    "USB Debugging: مفعّل ✓ | ADB Authorization: مقبول ✓");
+      addLog("info", `Android ${android} | SDK ${sdk} | Serial: ${serial}`);
+      addLog("info", "USB Debugging: مفعّل ✓ | ADB Authorization: مقبول ✓");
       setConnected(true);
       setConnecting(false);
       setDeviceModel(model);
@@ -83,7 +89,7 @@ export default function App() {
 
   const handleDisconnect = () => {
     addLog("warn", "تم قطع الاتصال بالجهاز");
-    addLog("cmd",  "adb disconnect");
+    addLog("cmd", "adb disconnect");
     setConnected(false);
     setDeviceModel("");
     setAndroidVersion("");
@@ -115,6 +121,7 @@ export default function App() {
     setSelectedOp(op);
     setShowScan(false);
     setOpsRun((n) => n + 1);
+    setLastOps((prev) => [op, ...prev.filter((item) => item.id !== op.id)].slice(0, 6));
     addLog("system", `▶ تنفيذ: ${op.labelAr} (${op.commands.length} أمر)`);
     op.commands.forEach((cmd, i) => {
       setTimeout(() => {
@@ -154,19 +161,85 @@ export default function App() {
     }, scanCmds.length * 150 + 700);
   };
 
-  const activeBrand   = BRANDS.find((b) => b.id === activeBrandId)!;
-  const displayGroups = activeGroupId
-    ? activeBrand.groups.filter((g) => g.id === activeGroupId)
-    : activeBrand.groups;
+  const activeBrand = BRANDS.find((b) => b.id === activeBrandId)!;
+  const allOperations = useMemo(() => BRANDS.flatMap((b) => b.groups.flatMap((g) => g.operations)), []);
+  const totalOperations = allOperations.length;
+  const favoriteCount = favorites.length;
+  const scanCount = allOperations.filter((op) => op.isScan).length;
+  const displayGroups = activeGroupId ? activeBrand.groups.filter((g) => g.id === activeGroupId) : activeBrand.groups;
+  const filteredOps = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    return activeBrand.groups
+      .map((group) => ({
+        ...group,
+        operations: group.operations.filter((op) => {
+          const inQuery = !term || op.labelAr.toLowerCase().includes(term) || op.label.toLowerCase().includes(term) || op.description.toLowerCase().includes(term);
+          const inFav = !showOnlyFavs || favorites.includes(op.id);
+          return inQuery && inFav;
+        }),
+      }))
+      .filter((group) => group.operations.length > 0);
+  }, [activeBrand.groups, favorites, query, showOnlyFavs]);
+  const toggleFavorite = useCallback((opId: string) => {
+    setFavorites((prev) => prev.includes(opId) ? prev.filter((id) => id !== opId) : [...prev, opId]);
+  }, []);
+  const visibleGroups = filteredOps.length ? filteredOps : displayGroups.map((group) => ({
+    ...group,
+    operations: group.operations.filter((op) => {
+      const term = query.trim().toLowerCase();
+      const inQuery = !term || op.labelAr.toLowerCase().includes(term) || op.label.toLowerCase().includes(term) || op.description.toLowerCase().includes(term);
+      const inFav = !showOnlyFavs || favorites.includes(op.id);
+      return inQuery && inFav;
+    }),
+  })).filter((group) => group.operations.length > 0);
+
+  const text = {
+    ar: {
+      subtitle: "واجهة مبسطة للتشخيص والإصلاح",
+      search: "ابحث عن عملية، ماركة، أو وصف...",
+      favorites: "المفضلة",
+      clear: "تصفير الفلتر",
+      quickScan: "⚡ فحص سريع",
+      details: "تفاصيل مختصرة",
+      simple: "عرض مبسط",
+      full: "عرض كامل",
+      lang: "العربية",
+      brands: "ماركة",
+      operations: "عملية",
+      scans: "فحص مباشر",
+      recent: "حديثاً",
+      noDevice: "لا يوجد اتصال — قم بتوصيل الجهاز عبر USB",
+      connected: "متصل",
+      disconnected: "غير متصل",
+    },
+    en: {
+      subtitle: "Simplified repair workspace",
+      search: "Search operation, brand, or description...",
+      favorites: "Favorites",
+      clear: "Clear filters",
+      quickScan: "⚡ Quick scan",
+      details: "Quick details",
+      simple: "Simple view",
+      full: "Full view",
+      lang: "English",
+      brands: "brands",
+      operations: "operations",
+      scans: "direct scans",
+      recent: "recent",
+      noDevice: "No device connected — plug in USB",
+      connected: "Connected",
+      disconnected: "Disconnected",
+    },
+  }[lang];
 
   return (
     <div className="flex flex-col h-screen bg-[#0b1120] text-white overflow-hidden select-none" dir="rtl">
       <div className="flex items-center justify-between px-4 py-2 bg-[#0e1525] border-b border-white/10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500/90 hover:bg-red-400 transition-colors cursor-pointer" />
-            <span className="w-3 h-3 rounded-full bg-yellow-500/90 hover:bg-yellow-400 transition-colors cursor-pointer" />
-            <span className="w-3 h-3 rounded-full bg-green-500/90 hover:bg-green-400 transition-colors cursor-pointer" />
+            <span className="w-3 h-3 rounded-full bg-red-500/90" />
+            <span className="w-3 h-3 rounded-full bg-yellow-500/90" />
+            <span className="w-3 h-3 rounded-full bg-green-500/90" />
           </div>
           <div className="flex items-center gap-2.5 mr-1">
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/50">
@@ -174,11 +247,19 @@ export default function App() {
             </div>
             <div className="leading-tight">
               <div className="text-sm font-bold text-white">Yemen Mobile Dev Tool</div>
-              <div className="text-[10px] text-cyan-400/70 font-mono tracking-wide">professional repair station · {BRANDS.length} brands · 100+ operations</div>
+              <div className="text-[10px] text-cyan-400/70 font-mono tracking-wide">{text.subtitle} · {BRANDS.length} {text.brands} · 100+ {text.operations}</div>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <button onClick={() => setCompactView((v) => !v)} className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-300">
+            {compactView ? <Grid2x2 size={11} /> : <Menu size={11} />}
+            {compactView ? text.full : text.simple}
+          </button>
+          <button onClick={() => setLang((v) => (v === "ar" ? "en" : "ar"))} className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-300">
+            <Languages size={11} />
+            {text.lang}
+          </button>
           <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-mono font-semibold">v2.0</span>
         </div>
         <div className="flex items-center gap-2 text-[10px] text-gray-600 font-mono">
@@ -186,69 +267,67 @@ export default function App() {
           <span>·</span><span>سبأفون 421/01</span>
           <span>·</span><span>يونيتل 421/04</span>
           <span>·</span><span>هيتس 421/03</span>
-          <DownloadProjectButton />
-          <GitHubProjectButton />
         </div>
       </div>
 
-      <DeviceInfoBar
-        connected={connected}
-        connecting={connecting}
-        deviceModel={deviceModel}
-        androidVersion={androidVersion}
-        serialNo={serialNo}
-        onConnect={handleConnect}
-        onDisconnect={handleDisconnect}
-      />
+      <DeviceInfoBar connected={connected} connecting={connecting} deviceModel={deviceModel} androidVersion={androidVersion} serialNo={serialNo} onConnect={handleConnect} onDisconnect={handleDisconnect} />
 
       <div className="flex items-center gap-2 px-4 py-1.5 bg-[#080e1c] border-b border-white/[0.05] shrink-0">
-        <button
-          onClick={handleQuickScan}
-          disabled={scanning}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-cyan-900/30 border border-cyan-700/40 text-cyan-300 hover:bg-cyan-800/40 transition-all text-[10px] font-semibold disabled:opacity-40"
-        >
+        <button onClick={handleQuickScan} disabled={scanning} className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-cyan-900/30 border border-cyan-700/40 text-cyan-300 hover:bg-cyan-800/40 transition-all text-[10px] font-semibold disabled:opacity-40">
           <ScanLine size={11} />
-          {scanning ? "جاري الفحص..." : "⚡ فحص سريع شامل"}
+          {scanning ? "جاري الفحص..." : text.quickScan}
         </button>
         {scanResult && !scanning && (
-          <button
-            onClick={() => setShowScan(!showScan)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-green-900/30 border border-green-700/40 text-green-300 hover:bg-green-800/40 transition-all text-[10px] font-semibold"
-          >
+          <button onClick={() => setShowScan(!showScan)} className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-green-900/30 border border-green-700/40 text-green-300 hover:bg-green-800/40 transition-all text-[10px] font-semibold">
             ✓ عرض نتائج الفحص — {scanResult.brand} {scanResult.model}
           </button>
         )}
-        <div className="mr-auto text-[9px] text-gray-700 font-mono">
-          {BRANDS.length} ماركة · {BRANDS.reduce((a, b) => a + b.groups.reduce((c, g) => c + g.operations.length, 0), 0)} عملية
+        <div className="mr-auto flex items-center gap-2 text-[9px] text-gray-700 font-mono">
+          <span>{BRANDS.length} {text.brands}</span>
+          <span>·</span>
+          <span>{totalOperations} {text.operations}</span>
+          <span>·</span>
+          <span>{scanCount} {text.scans}</span>
+          <span>·</span>
+          <span>{favoriteCount} {text.favorites}</span>
         </div>
       </div>
 
+      <div className="px-4 py-2 border-b border-white/[0.05] bg-[#09101e] flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 flex-1 min-w-0 bg-black/30 border border-white/[0.06] rounded-lg px-3 py-2">
+          <Search size={12} className="text-gray-500 shrink-0" />
+          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={text.search} className="w-full bg-transparent outline-none text-xs text-white placeholder:text-gray-600" />
+        </div>
+        <button onClick={() => setShowOnlyFavs((v) => !v)} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-semibold transition-all ${showOnlyFavs ? "bg-yellow-900/25 border-yellow-700/40 text-yellow-300" : "bg-black/25 border-white/10 text-gray-400 hover:text-white"}`}>
+          <Star size={11} />
+          {text.favorites}
+        </button>
+        <button onClick={() => { setQuery(""); setShowOnlyFavs(false); }} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-black/25 border border-white/10 text-gray-400 hover:text-white text-[10px] font-semibold">
+          <Filter size={11} />
+          {text.clear}
+        </button>
+      </div>
+
       <div className="flex flex-1 min-h-0">
-        <aside className="w-52 shrink-0 bg-[#0e1525] border-l border-white/[0.07] flex flex-col overflow-y-auto">
+        <aside className={`${compactView ? "w-20" : "w-52"} shrink-0 bg-[#0e1525] border-l border-white/[0.07] flex flex-col overflow-y-auto`}>
           <div className="px-3 pt-2.5 pb-2 text-[9px] font-bold text-gray-600 uppercase tracking-widest flex items-center gap-2 border-b border-white/[0.05]">
             <span className="flex-1 h-px bg-gray-800" />
-            الماركات
+            {compactView ? "" : "الماركات"}
             <span className="flex-1 h-px bg-gray-800" />
           </div>
           {BRANDS.map((brand) => {
             const active = activeBrandId === brand.id;
             const opCount = brand.groups.reduce((a, g) => a + g.operations.length, 0);
             return (
-              <button
-                key={brand.id}
-                onClick={() => { setActiveBrandId(brand.id); setActiveGroupId(null); setSelectedOp(null); setShowScan(false); }}
-                className={`w-full text-right px-3 py-3 text-xs font-medium border-b border-white/[0.03] transition-all duration-150 flex items-center gap-2 ${
-                  active ? "text-white bg-white/[0.06]" : "text-gray-500 hover:bg-white/[0.03] hover:text-gray-300"
-                }`}
-                style={active ? { boxShadow: `inset -3px 0 0 ${brand.color}` } : undefined}
-              >
-                <span className="w-2 h-2 rounded-full shrink-0 transition-all"
-                  style={{ backgroundColor: active ? brand.color : "#374151", boxShadow: active ? `0 0 6px ${brand.color}80` : "none" }} />
+              <button key={brand.id} onClick={() => { setActiveBrandId(brand.id); setActiveGroupId(null); setSelectedOp(null); setShowScan(false); }} className={`w-full text-right px-3 py-3 text-xs font-medium border-b border-white/[0.03] transition-all duration-150 flex items-center gap-2 ${active ? "text-white bg-white/[0.06]" : "text-gray-500 hover:bg-white/[0.03] hover:text-gray-300"}`} style={active ? { boxShadow: `inset -3px 0 0 ${brand.color}` } : undefined}>
+                <span className="w-2 h-2 rounded-full shrink-0 transition-all" style={{ backgroundColor: active ? brand.color : "#374151", boxShadow: active ? `0 0 6px ${brand.color}80` : "none" }} />
                 <span className="text-sm leading-none">{BRAND_ICONS[brand.id] ?? "📱"}</span>
-                <div className="flex-1 text-right leading-tight min-w-0">
-                  <div className="font-semibold truncate">{brand.nameAr}</div>
-                  <div className="text-[9px] opacity-40 mt-0.5 truncate">{brand.chipset}</div>
-                </div>
+                {!compactView && (
+                  <div className="flex-1 text-right leading-tight min-w-0">
+                    <div className="font-semibold truncate">{brand.nameAr}</div>
+                    <div className="text-[9px] opacity-40 mt-0.5 truncate">{brand.chipset}</div>
+                  </div>
+                )}
                 <span className="text-[9px] text-gray-700 shrink-0">{opCount}</span>
               </button>
             );
@@ -268,26 +347,11 @@ export default function App() {
               <span className="text-sm">{BRAND_ICONS[activeBrandId] ?? "📱"}</span>
               <span className="text-gray-400">{activeBrand.nameAr}</span>
             </div>
-            <button
-              onClick={() => setActiveGroupId(null)}
-              className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${
-                activeGroupId === null
-                  ? "border-cyan-400 text-cyan-300 bg-white/[0.04]"
-                  : "border-transparent text-gray-600 hover:text-gray-300 hover:bg-white/[0.02]"
-              }`}
-            >
+            <button onClick={() => setActiveGroupId(null)} className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${activeGroupId === null ? "border-cyan-400 text-cyan-300 bg-white/[0.04]" : "border-transparent text-gray-600 hover:text-gray-300 hover:bg-white/[0.02]"}`}>
               الكل
             </button>
             {activeBrand.groups.map((group) => (
-              <button
-                key={group.id}
-                onClick={() => setActiveGroupId(group.id)}
-                className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${
-                  activeGroupId === group.id
-                    ? "border-cyan-400 text-cyan-300 bg-white/[0.04]"
-                    : "border-transparent text-gray-600 hover:text-gray-300 hover:bg-white/[0.02]"
-                }`}
-              >
+              <button key={group.id} onClick={() => setActiveGroupId(group.id)} className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${activeGroupId === group.id ? "border-cyan-400 text-cyan-300 bg-white/[0.04]" : "border-transparent text-gray-600 hover:text-gray-300 hover:bg-white/[0.02]"}`}>
                 {group.titleAr}
               </button>
             ))}
@@ -300,7 +364,9 @@ export default function App() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-5">
-            {displayGroups.map((group) => (
+            {visibleGroups.length === 0 ? (
+              <div className="flex h-full items-center justify-center text-center text-gray-600 text-sm">لا توجد نتائج مطابقة</div>
+            ) : visibleGroups.map((group) => (
               <div key={group.id}>
                 <div className="flex items-center gap-2 mb-2.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/60 shrink-0" />
@@ -310,13 +376,7 @@ export default function App() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {group.operations.map((op) => (
-                    <OperationButton
-                      key={op.id}
-                      operation={op}
-                      onClick={handleOperation}
-                      active={selectedOp?.id === op.id}
-                      running={runningOpId === op.id}
-                    />
+                    <OperationButton key={op.id} operation={op} onClick={handleOperation} active={selectedOp?.id === op.id} running={runningOpId === op.id} favorite={favorites.includes(op.id)} onToggleFavorite={() => toggleFavorite(op.id)} />
                   ))}
                 </div>
               </div>
@@ -324,18 +384,14 @@ export default function App() {
           </div>
         </div>
 
-        <aside className="w-64 shrink-0 bg-[#0e1525] border-r border-white/[0.07] flex flex-col overflow-hidden">
+        <aside className="w-72 shrink-0 bg-[#0e1525] border-r border-white/[0.07] flex flex-col overflow-hidden">
           {showScan ? (
-            <ScanPanel
-              result={scanResult}
-              scanning={scanning}
-              onClose={() => setShowScan(false)}
-            />
+            <ScanPanel result={scanResult} scanning={scanning} onClose={() => setShowScan(false)} />
           ) : (
             <>
               <div className="px-3 py-2.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest flex items-center gap-2 border-b border-white/[0.05] shrink-0">
                 <Zap size={10} className="text-cyan-400" />
-                تفاصيل العملية
+                {text.details}
               </div>
               {selectedOp ? (
                 <div className="flex-1 overflow-y-auto p-3 space-y-3">
@@ -350,25 +406,22 @@ export default function App() {
                   </div>
                   <div className="space-y-2">
                     {selectedOp.commands.map((cmd, i) => (
-                      <div key={i} className="bg-black/40 rounded-lg overflow-hidden border border-white/[0.06]">
+                      <div key={`${selectedOp.id}-${i}`} className="bg-black/40 rounded-lg overflow-hidden border border-white/[0.06]">
                         <div className="flex items-center justify-between px-2 py-1 bg-white/[0.03] border-b border-white/[0.05]">
                           <span className="text-[9px] text-gray-700 font-mono">#{i + 1}</span>
                           <CopyButton text={cmd} label="نسخ" />
                         </div>
                         <div className="px-2.5 py-2">
-                          <span className="font-mono text-[10px] text-amber-300/90 whitespace-pre-wrap break-all leading-relaxed select-text">
-                            {cmd}
-                          </span>
+                          <span className="font-mono text-[10px] text-amber-300/90 whitespace-pre-wrap break-all leading-relaxed select-text">{cmd}</span>
                         </div>
                       </div>
                     ))}
                   </div>
-                  <button
-                    onClick={() => handleOperation(selectedOp)}
-                    disabled={!!runningOpId}
-                    className="w-full py-2.5 bg-gradient-to-r from-cyan-800/60 to-blue-800/60 hover:from-cyan-700/70 hover:to-blue-700/70 border border-cyan-700/40 text-cyan-200 text-xs font-bold rounded-lg transition-all disabled:opacity-40"
-                  >
+                  <button onClick={() => handleOperation(selectedOp)} disabled={!!runningOpId} className="w-full py-2.5 bg-gradient-to-r from-cyan-800/60 to-blue-800/60 hover:from-cyan-700/70 hover:to-blue-700/70 border border-cyan-700/40 text-cyan-200 text-xs font-bold rounded-lg transition-all disabled:opacity-40">
                     {runningOpId === selectedOp.id ? "⏳ جاري التنفيذ..." : "▶ تنفيذ مجدداً"}
+                  </button>
+                  <button onClick={() => toggleFavorite(selectedOp.id)} className="w-full py-2.5 bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.06] text-xs font-bold rounded-lg transition-all text-yellow-300">
+                    {favorites.includes(selectedOp.id) ? "★ إزالة من المفضلة" : "☆ إضافة إلى المفضلة"}
                   </button>
                 </div>
               ) : (
@@ -376,15 +429,10 @@ export default function App() {
                   <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center">
                     <Zap size={22} className="text-gray-700" />
                   </div>
-                  <div className="text-gray-700 text-xs leading-relaxed">
-                    اضغط على أي عملية<br />لعرض تفاصيلها وأوامرها
-                  </div>
-                  <button
-                    onClick={handleQuickScan}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cyan-900/30 border border-cyan-700/30 text-cyan-400 text-[10px] font-semibold hover:bg-cyan-800/40 transition-all"
-                  >
+                  <div className="text-gray-700 text-xs leading-relaxed">اضغط على أي عملية<br />لعرض تفاصيلها وأوامرها</div>
+                  <button onClick={handleQuickScan} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cyan-900/30 border border-cyan-700/30 text-cyan-400 text-[10px] font-semibold hover:bg-cyan-800/40 transition-all">
                     <ScanLine size={11} />
-                    ابدأ بفحص الجهاز
+                    {text.quickScan}
                   </button>
                 </div>
               )}
@@ -398,14 +446,15 @@ export default function App() {
       <div className="flex items-center justify-between px-4 py-1 bg-[#060a12] border-t border-white/[0.04] text-[9px] text-gray-700 font-mono shrink-0">
         <div className="flex items-center gap-3">
           <span className={connected ? "text-green-500" : "text-gray-700"}>
-            ● {connected ? `متصل — ${deviceModel} · Android ${androidVersion}` : "لا يوجد اتصال — قم بتوصيل الجهاز عبر USB"}
+            ● {connected ? `متصل — ${deviceModel} · Android ${androidVersion}` : text.noDevice}
           </span>
         </div>
         <div className="flex items-center gap-3">
           {scanResult && <span className="text-cyan-600">آخر فحص: {scanResult.brand} {scanResult.model}</span>}
           <span className="flex items-center gap-1"><Clock size={9} />عمليات: {opsRun}</span>
+          <span className="flex items-center gap-1"><History size={9} />حديثاً: {lastOps.length}</span>
           <span>|</span>
-          <span>{BRANDS.length} ماركة</span>
+          <span>{BRANDS.length} {text.brands}</span>
           <span>|</span>
           <span>ADB v1.0.41</span>
           <span>|</span>
