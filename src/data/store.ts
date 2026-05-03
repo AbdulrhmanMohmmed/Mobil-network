@@ -147,8 +147,8 @@ export function addTicket(data: Partial<RepairTicket>): RepairTicket {
     solution: data.solution || "",
     status: data.status || "received",
     priority: data.priority || "medium",
-    cost: data.cost || 0,
-    partsCost: data.partsCost || 0,
+    cost: data.cost ?? 0,
+    partsCost: data.partsCost ?? 0,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     technicianName: data.technicianName || "",
@@ -191,8 +191,8 @@ export function addCustomer(data: Partial<Customer>): Customer {
     phone: data.phone || "",
     email: data.email || "",
     address: data.address || "",
-    totalVisits: data.totalVisits || 0,
-    totalSpent: data.totalSpent || 0,
+    totalVisits: data.totalVisits ?? 0,
+    totalSpent: data.totalSpent ?? 0,
     createdAt: new Date().toISOString(),
     notes: data.notes || "",
   };
@@ -233,10 +233,10 @@ export function addInventoryItem(data: Partial<InventoryItem>): InventoryItem {
     category: data.category || "other",
     brand: data.brand || "",
     model: data.model || "",
-    quantity: data.quantity || 0,
-    costPrice: data.costPrice || 0,
-    sellPrice: data.sellPrice || 0,
-    minStock: data.minStock || 5,
+    quantity: data.quantity ?? 0,
+    costPrice: data.costPrice ?? 0,
+    sellPrice: data.sellPrice ?? 0,
+    minStock: data.minStock ?? 5,
     barcode: data.barcode || "",
     supplier: data.supplier || "",
     createdAt: new Date().toISOString(),
@@ -272,9 +272,9 @@ export function saveInvoices(invoices: Invoice[]): void {
 export function addInvoice(data: Partial<Invoice>): Invoice {
   const invoices = getInvoices();
   const items = data.items || [];
-  const laborCost = data.laborCost || 0;
-  const discount = data.discount || 0;
-  const tax = data.tax || 0;
+  const laborCost = data.laborCost ?? 0;
+  const discount = data.discount ?? 0;
+  const tax = data.tax ?? 0;
   const subtotal = items.reduce((sum, item) => sum + item.total, 0) + laborCost;
   const total = subtotal - discount + tax;
 
