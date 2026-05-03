@@ -53,7 +53,7 @@ export function OperationButton({ operation, onClick, active, running, favorite,
 
       {/* Favorite star */}
       {favorite && !running && (
-        <span className="absolute top-2 left-2 text-yellow-400 text-[10px]">★</span>
+        <span className="absolute top-2 left-2 text-yellow-400 text-[10px] cursor-pointer hover:scale-125 transition-transform" onClick={e => { e.stopPropagation(); onToggleFavorite?.(); }}>★</span>
       )}
 
       {/* Running indicator dot */}

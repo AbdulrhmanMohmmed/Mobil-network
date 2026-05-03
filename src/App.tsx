@@ -142,6 +142,7 @@ export default function App() {
     }
 
     setRunningOpId(op.id);
+    setShowScan(false);
     setOpsRun((v) => v + 1);
     setLastOps((prev) => [op, ...prev.filter((item) => item.id !== op.id)].slice(0, 6));
     addLog("system", `▶ تنفيذ: ${op.labelAr} (${op.commands.length} أمر)`);
