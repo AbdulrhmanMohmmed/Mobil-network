@@ -19,9 +19,11 @@ interface OperationButtonProps {
   onClick: (op: Operation) => void;
   active?: boolean;
   running?: boolean;
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
-export function OperationButton({ operation, onClick, active, running }: OperationButtonProps) {
+export function OperationButton({ operation, onClick, active, running, favorite, onToggleFavorite }: OperationButtonProps) {
   const c = COLOR_MAP[operation.color];
 
   return (
@@ -48,6 +50,11 @@ export function OperationButton({ operation, onClick, active, running }: Operati
         <div className="font-semibold text-xs truncate">{operation.labelAr}</div>
         <div className="text-[10px] opacity-40 font-normal mt-0.5 truncate">{operation.label}</div>
       </div>
+
+      {/* Favorite star */}
+      {favorite && (
+        <span className="absolute top-2 left-2 text-yellow-400 text-[10px]">★</span>
+      )}
 
       {/* Running indicator dot */}
       {running && (

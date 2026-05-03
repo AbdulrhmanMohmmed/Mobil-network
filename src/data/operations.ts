@@ -156,6 +156,100 @@ const GENERAL_GROUPS: OperationGroup[] = [
       { id: "screen_record",   labelAr: "تسجيل الشاشة",             label: "Screen Record",   color: "blue",   description: "تسجيل الشاشة لمدة 30 ثانية",     commands: ["adb shell screenrecord /sdcard/record.mp4"] },
     ],
   },
+  // ─── تعريب الهواتف (ARABIZATION) ──────────────────────────────────────────
+  {
+    id: "arabization",
+    titleAr: "تعريب الهواتف",
+    operations: [
+      { id: "arabic_locale_ye", labelAr: "تعريب عربي يمني", label: "Arabic Yemen Locale", color: "green", description: "تغيير لغة الجهاز إلى العربية (اليمن)", commands: ["adb shell settings put system system_locales ar-YE", "adb shell setprop persist.sys.locale ar-YE", "adb shell setprop persist.sys.language ar", "adb shell setprop persist.sys.country YE"] },
+      { id: "arabic_locale_sa", labelAr: "تعريب عربي سعودي", label: "Arabic Saudi Locale", color: "green", description: "تغيير لغة الجهاز إلى العربية (السعودية)", commands: ["adb shell settings put system system_locales ar-SA", "adb shell setprop persist.sys.locale ar-SA", "adb shell setprop persist.sys.language ar", "adb shell setprop persist.sys.country SA"] },
+      { id: "arabic_locale_eg", labelAr: "تعريب عربي مصري", label: "Arabic Egypt Locale", color: "green", description: "تغيير لغة الجهاز إلى العربية (مصر)", commands: ["adb shell settings put system system_locales ar-EG", "adb shell setprop persist.sys.locale ar-EG", "adb shell setprop persist.sys.language ar", "adb shell setprop persist.sys.country EG"] },
+      { id: "arabic_locale_generic", labelAr: "تعريب عربي عام", label: "Arabic Generic", color: "green", description: "تعريب عام لجميع الأجهزة", commands: ["adb shell settings put system system_locales ar", "adb shell setprop persist.sys.locale ar", "adb shell setprop persist.sys.language ar"] },
+      { id: "arabic_keyboard", labelAr: "إضافة لوحة مفاتيح عربية", label: "Arabic Keyboard", color: "blue", description: "تفعيل لوحة المفاتيح العربية Gboard", commands: ["adb shell ime enable com.google.android.inputmethod.latin/.LatinIME", "adb shell ime set com.google.android.inputmethod.latin/.LatinIME"] },
+      { id: "arabic_samsung_keyboard", labelAr: "لوحة مفاتيح Samsung عربية", label: "Samsung Arabic KB", color: "blue", description: "تفعيل لوحة مفاتيح Samsung العربية", commands: ["adb shell ime enable com.samsung.android.honeyboard/.service.HoneyBoardService", "adb shell ime set com.samsung.android.honeyboard/.service.HoneyBoardService"] },
+      { id: "fix_arabic_font", labelAr: "إصلاح الخطوط العربية", label: "Fix Arabic Fonts", color: "cyan", description: "إصلاح مشاكل عرض الخطوط العربية", commands: ["adb shell settings put system font_scale 1.0", "adb shell am broadcast -a android.intent.action.LOCALE_CHANGED"] },
+      { id: "set_timezone_yemen", labelAr: "ضبط التوقيت — اليمن", label: "Yemen Timezone", color: "gray", description: "ضبط المنطقة الزمنية لليمن (GMT+3)", commands: ["adb shell settings put global auto_time_zone 0", "adb shell setprop persist.sys.timezone Asia/Aden", "adb shell service call alarm 3 s16 Asia/Aden"] },
+      { id: "set_timezone_sa", labelAr: "ضبط التوقيت — السعودية", label: "Saudi Timezone", color: "gray", description: "ضبط المنطقة الزمنية للسعودية (GMT+3)", commands: ["adb shell settings put global auto_time_zone 0", "adb shell setprop persist.sys.timezone Asia/Riyadh", "adb shell service call alarm 3 s16 Asia/Riyadh"] },
+      { id: "set_english_locale", labelAr: "تحويل إلى الإنجليزية", label: "English Locale", color: "gray", description: "إعادة اللغة إلى الإنجليزية", commands: ["adb shell settings put system system_locales en-US", "adb shell setprop persist.sys.locale en-US", "adb shell setprop persist.sys.language en", "adb shell setprop persist.sys.country US"] },
+      { id: "arabic_morelocale", labelAr: "تعريب MoreLocale (بدون روت)", label: "MoreLocale Arabic", color: "purple", description: "منح صلاحية MoreLocale لتعريب بدون روت", commands: ["adb shell pm grant jp.co.c_lis.ccl.morelocale android.permission.CHANGE_CONFIGURATION"] },
+      { id: "samsung_csc_read", labelAr: "قراءة CSC الحالي (Samsung)", label: "Read Samsung CSC", color: "cyan", description: "قراءة كود CSC الحالي لجهاز Samsung", commands: ["adb shell getprop ro.csc.sales_code", "adb shell getprop ril.official_cscver", "adb shell getprop ro.csc.country_code"] },
+    ],
+  },
+  // ─── التشخيص المتقدم (ADVANCED DIAGNOSTICS) ──────────────────────────────
+  {
+    id: "advanced_diagnostics",
+    titleAr: "تشخيص متقدم للجهاز",
+    operations: [
+      { id: "diag_battery_health", labelAr: "صحة البطارية التفصيلية", label: "Battery Health", color: "green", isScan: true, description: "فحص شامل لصحة البطارية: الدورات، السعة، الحرارة", commands: ["adb shell dumpsys battery", "adb shell cat /sys/class/power_supply/battery/health", "adb shell cat /sys/class/power_supply/battery/cycle_count", "adb shell cat /sys/class/power_supply/battery/charge_full", "adb shell cat /sys/class/power_supply/battery/charge_full_design", "adb shell cat /sys/class/power_supply/battery/temp"] },
+      { id: "diag_screen", labelAr: "فحص الشاشة والعرض", label: "Display Test", color: "blue", isScan: true, description: "فحص دقة الشاشة والكثافة واللمس", commands: ["adb shell wm size", "adb shell wm density", "adb shell dumpsys display | head -30", "adb shell dumpsys SurfaceFlinger --latency", "adb shell settings get system screen_brightness", "adb shell content query --uri content://settings/system --projection name:value --where \"name='screen_brightness'\""] },
+      { id: "diag_sensors", labelAr: "فحص الحساسات", label: "Sensor Test", color: "purple", isScan: true, description: "فحص جميع حساسات الجهاز: تسارع، جايروسكوب، قرب، إضاءة", commands: ["adb shell dumpsys sensorservice | head -50"] },
+      { id: "diag_camera", labelAr: "فحص الكاميرا", label: "Camera Test", color: "cyan", isScan: true, description: "فحص معلومات الكاميرا الأمامية والخلفية", commands: ["adb shell dumpsys media.camera | head -40"] },
+      { id: "diag_audio", labelAr: "فحص الصوت", label: "Audio Test", color: "orange", isScan: true, description: "فحص السماعة والمايكروفون ومستوى الصوت", commands: ["adb shell dumpsys audio | head -30", "adb shell dumpsys media.audio_policy | head -20"] },
+      { id: "diag_gps", labelAr: "فحص GPS والموقع", label: "GPS Test", color: "green", isScan: true, description: "فحص حالة GPS وخدمات الموقع", commands: ["adb shell dumpsys location | head -30", "adb shell settings get secure location_providers_allowed"] },
+      { id: "diag_wifi_bt", labelAr: "فحص WiFi و Bluetooth", label: "WiFi/BT Test", color: "blue", isScan: true, description: "فحص حالة WiFi و Bluetooth", commands: ["adb shell dumpsys wifi | head -20", "adb shell dumpsys bluetooth_manager | head -20", "adb shell settings get global wifi_on", "adb shell settings get global bluetooth_on"] },
+      { id: "diag_performance", labelAr: "فحص الأداء والذاكرة", label: "Performance Test", color: "red", isScan: true, description: "فحص استهلاك المعالج والذاكرة العشوائية", commands: ["adb shell dumpsys meminfo | head -20", "adb shell dumpsys cpuinfo | head -15", "adb shell cat /proc/meminfo | head -10", "adb shell top -n 1 -m 5 | head -15"] },
+      { id: "diag_usb", labelAr: "فحص USB والشحن", label: "USB & Charging", color: "yellow", isScan: true, description: "فحص حالة USB ونوع الشحن والتيار", commands: ["adb shell cat /sys/class/power_supply/usb/type", "adb shell cat /sys/class/power_supply/usb/current_max", "adb shell getprop sys.usb.state", "adb shell getprop sys.usb.config"] },
+      { id: "diag_tradein", labelAr: "فحص Trade-in الشامل", label: "Trade-in Mode Check", color: "cyan", isScan: true, description: "فحص تلقائي شامل (Android 16+) للبيع والشراء", commands: ["adb shell tradeinmode getstatus"] },
+    ],
+  },
+  // ─── النسخ الاحتياطي والاستعادة (BACKUP & RESTORE) ────────────────────────
+  {
+    id: "backup_restore",
+    titleAr: "النسخ الاحتياطي والاستعادة",
+    operations: [
+      { id: "backup_contacts", labelAr: "نسخ جهات الاتصال", label: "Backup Contacts", color: "blue", description: "نسخ جميع جهات الاتصال إلى ملف", commands: ["adb shell content query --uri content://contacts/phones/ > contacts_backup.txt"] },
+      { id: "backup_sms", labelAr: "نسخ الرسائل SMS", label: "Backup SMS", color: "blue", description: "نسخ جميع الرسائل النصية إلى ملف", commands: ["adb shell content query --uri content://sms/ > sms_backup.txt"] },
+      { id: "backup_apps_list", labelAr: "نسخ قائمة التطبيقات", label: "Backup App List", color: "gray", description: "حفظ قائمة التطبيقات المثبتة", commands: ["adb shell pm list packages -3 > installed_apps.txt"] },
+      { id: "backup_full", labelAr: "نسخ احتياطي كامل", label: "Full Backup", color: "green", description: "نسخ احتياطي كامل للجهاز (تطبيقات + بيانات)", commands: ["adb backup -apk -shared -all -f full_backup.ab"] },
+      { id: "restore_full", labelAr: "استعادة النسخ الاحتياطي", label: "Restore Backup", color: "orange", description: "استعادة نسخة احتياطية كاملة", commands: ["adb restore full_backup.ab"] },
+      { id: "backup_photos", labelAr: "نسخ الصور والفيديو", label: "Backup Photos", color: "cyan", description: "نسخ مجلد DCIM (الصور والفيديو)", commands: ["adb pull /sdcard/DCIM/ ./photos_backup/"] },
+      { id: "backup_whatsapp", labelAr: "نسخ WhatsApp", label: "Backup WhatsApp", color: "green", description: "نسخ بيانات واتساب كاملة", commands: ["adb pull /sdcard/WhatsApp/ ./whatsapp_backup/", "adb pull /sdcard/Android/media/com.whatsapp/ ./whatsapp_media_backup/"] },
+      { id: "backup_downloads", labelAr: "نسخ التنزيلات", label: "Backup Downloads", color: "blue", description: "نسخ مجلد التنزيلات", commands: ["adb pull /sdcard/Download/ ./downloads_backup/"] },
+      { id: "backup_apk", labelAr: "سحب APK تطبيق معين", label: "Pull APK", color: "purple", description: "سحب ملف APK لتطبيق معين من الجهاز", commands: ["adb shell pm list packages -3", "adb shell pm path com.example.app", "adb pull /data/app/com.example.app/base.apk ./app_backup.apk"] },
+      { id: "push_file", labelAr: "إرسال ملف للجهاز", label: "Push File", color: "orange", description: "إرسال ملف من الكمبيوتر إلى الجهاز", commands: ["adb push ./file.apk /sdcard/Download/"] },
+    ],
+  },
+  // ─── أوامر متقدمة (ADVANCED COMMANDS) ─────────────────────────────────────
+  {
+    id: "advanced_commands",
+    titleAr: "أوامر متقدمة",
+    operations: [
+      { id: "adv_disable_bloatware", labelAr: "تعطيل Bloatware", label: "Disable Bloatware", color: "orange", description: "عرض وتعطيل التطبيقات المثبتة مسبقاً", commands: ["adb shell pm list packages -s", "adb shell pm disable-user --user 0 com.example.bloatware"] },
+      { id: "adv_enable_app", labelAr: "تفعيل تطبيق معطل", label: "Enable App", color: "green", description: "إعادة تفعيل تطبيق تم تعطيله", commands: ["adb shell pm enable com.example.app"] },
+      { id: "adv_uninstall_app", labelAr: "حذف تطبيق", label: "Uninstall App", color: "red", description: "حذف تطبيق من الجهاز (بدون روت)", commands: ["adb shell pm uninstall -k --user 0 com.example.app"] },
+      { id: "adv_install_apk", labelAr: "تثبيت APK", label: "Install APK", color: "green", description: "تثبيت تطبيق APK على الجهاز", commands: ["adb install -r ./app.apk"] },
+      { id: "adv_change_dpi", labelAr: "تغيير كثافة الشاشة DPI", label: "Change DPI", color: "purple", description: "تغيير كثافة الشاشة لتكبير/تصغير العرض", commands: ["adb shell wm density 320"] },
+      { id: "adv_reset_dpi", labelAr: "إعادة DPI الافتراضي", label: "Reset DPI", color: "gray", description: "إعادة كثافة الشاشة للإعداد الافتراضي", commands: ["adb shell wm density reset"] },
+      { id: "adv_change_resolution", labelAr: "تغيير دقة الشاشة", label: "Change Resolution", color: "purple", description: "تغيير دقة عرض الشاشة", commands: ["adb shell wm size 1080x2400"] },
+      { id: "adv_reset_resolution", labelAr: "إعادة الدقة الافتراضية", label: "Reset Resolution", color: "gray", description: "إعادة دقة الشاشة للإعداد الافتراضي", commands: ["adb shell wm size reset"] },
+      { id: "adv_font_scale", labelAr: "تغيير حجم الخط", label: "Font Scale", color: "blue", description: "تكبير أو تصغير حجم خط النظام", commands: ["adb shell settings put system font_scale 1.2"] },
+      { id: "adv_enable_dev_options", labelAr: "تفعيل خيارات المطورين", label: "Enable Dev Options", color: "cyan", description: "تفعيل إعدادات المطورين", commands: ["adb shell settings put global development_settings_enabled 1"] },
+      { id: "adv_stay_awake", labelAr: "إبقاء الشاشة مضاءة", label: "Stay Awake", color: "yellow", description: "إبقاء الشاشة مضاءة أثناء الشحن", commands: ["adb shell settings put global stay_on_while_plugged_in 3"] },
+      { id: "adv_grant_permission", labelAr: "منح صلاحية لتطبيق", label: "Grant Permission", color: "green", description: "منح صلاحية محددة لتطبيق", commands: ["adb shell pm grant com.example.app android.permission.READ_EXTERNAL_STORAGE"] },
+      { id: "adv_revoke_permission", labelAr: "سحب صلاحية من تطبيق", label: "Revoke Permission", color: "red", description: "سحب صلاحية من تطبيق", commands: ["adb shell pm revoke com.example.app android.permission.READ_EXTERNAL_STORAGE"] },
+      { id: "adv_deep_clean", labelAr: "تنظيف شامل للجهاز", label: "Deep Clean", color: "orange", description: "مسح الكاش وتحسين الأداء", commands: ["adb shell pm trim-caches 1000G", "adb shell am kill-all", "adb shell input keyevent 187"] },
+      { id: "adv_factory_reset", labelAr: "⚠️ إعادة ضبط المصنع", label: "Factory Reset", color: "red", description: "إعادة ضبط المصنع (يمحو جميع البيانات!)", commands: ["adb shell am broadcast -a android.intent.action.MASTER_CLEAR"] },
+      { id: "adv_logcat", labelAr: "عرض سجل النظام Logcat", label: "Logcat", color: "gray", description: "عرض سجل أحداث النظام للتشخيص", commands: ["adb logcat -d -t 50"] },
+    ],
+  },
+  // ─── التحكم عن بعد (REMOTE CONTROL) ───────────────────────────────────────
+  {
+    id: "remote_control",
+    titleAr: "التحكم عن بعد بالجهاز",
+    operations: [
+      { id: "remote_scrcpy_usb", labelAr: "تشغيل scrcpy (USB)", label: "scrcpy USB", color: "cyan", description: "عرض والتحكم بشاشة الجهاز عبر USB", commands: ["scrcpy --max-size 1024 --bit-rate 4M"] },
+      { id: "remote_scrcpy_wifi", labelAr: "تشغيل scrcpy (WiFi)", label: "scrcpy WiFi", color: "blue", description: "عرض والتحكم بشاشة الجهاز عبر WiFi", commands: ["adb tcpip 5555", "adb connect DEVICE_IP:5555", "scrcpy --max-size 1024"] },
+      { id: "remote_wifi_adb", labelAr: "تفعيل ADB عبر WiFi", label: "WiFi ADB", color: "green", description: "تفعيل الاتصال اللاسلكي عبر ADB", commands: ["adb tcpip 5555", "adb shell ip route | awk '{print $9}'"] },
+      { id: "remote_disconnect_wifi", labelAr: "قطع ADB WiFi", label: "Disconnect WiFi ADB", color: "gray", description: "قطع اتصال ADB اللاسلكي", commands: ["adb disconnect", "adb usb"] },
+      { id: "remote_screen_record", labelAr: "تسجيل شاشة متقدم", label: "Record Screen", color: "purple", description: "تسجيل شاشة الجهاز بجودة عالية", commands: ["adb shell screenrecord --time-limit 120 --bit-rate 6000000 /sdcard/recording.mp4"] },
+      { id: "remote_key_power", labelAr: "ضغط زر الباور", label: "Power Key", color: "orange", description: "محاكاة ضغط زر التشغيل", commands: ["adb shell input keyevent 26"] },
+      { id: "remote_key_home", labelAr: "ضغط زر Home", label: "Home Key", color: "blue", description: "محاكاة ضغط زر Home", commands: ["adb shell input keyevent 3"] },
+      { id: "remote_key_back", labelAr: "ضغط زر الرجوع", label: "Back Key", color: "blue", description: "محاكاة ضغط زر الرجوع", commands: ["adb shell input keyevent 4"] },
+      { id: "remote_key_volup", labelAr: "رفع الصوت", label: "Volume Up", color: "gray", description: "محاكاة رفع الصوت", commands: ["adb shell input keyevent 24"] },
+      { id: "remote_key_voldown", labelAr: "خفض الصوت", label: "Volume Down", color: "gray", description: "محاكاة خفض الصوت", commands: ["adb shell input keyevent 25"] },
+      { id: "remote_open_settings", labelAr: "فتح الإعدادات", label: "Open Settings", color: "green", description: "فتح إعدادات الجهاز عن بعد", commands: ["adb shell am start -n com.android.settings/.Settings"] },
+    ],
+  },
 ];
 
 // ─── FRP (ALL BRANDS) ────────────────────────────────────────────────────────
@@ -245,6 +339,17 @@ const SAMSUNG_GROUPS: OperationGroup[] = [
       { id: "sam_wipe_data",     labelAr: "Wipe Data [Fastboot]",    label: "Wipe Data",        color: "red",    description: "مسح بيانات المستخدم (خطر!)",          commands: ["fastboot erase userdata", "fastboot erase cache", "fastboot reboot"] },
       { id: "sam_flash_recovery",labelAr: "Flash Recovery [Fastboot]",label: "Flash Recovery",  color: "blue",   description: "فلاش ملف Recovery.img",              commands: ["fastboot flash recovery recovery.img", "fastboot reboot"] },
       { id: "sam_unlock_bl",     labelAr: "Unlock Bootloader",       label: "Unlock Bootloader",color: "red",    description: "فتح قفل Bootloader (يمحو البيانات!)", commands: ["fastboot flashing unlock", "fastboot reboot"] },
+    ],
+  },
+  // Samsung Arabization (تعريب سامسونج)
+  {
+    id: "samsung_arabization",
+    titleAr: "تعريب Samsung",
+    operations: [
+      { id: "sam_arabic_csc", labelAr: "تغيير CSC للتعريب", label: "Change CSC Arabic", color: "green", description: "تغيير CSC لتفعيل اللغة العربية", commands: ["adb shell getprop ro.csc.sales_code", "adb shell settings put global csc_sales_code AFR"] },
+      { id: "sam_arabic_locale", labelAr: "تعريب Samsung مباشر", label: "Samsung Arabic Locale", color: "green", description: "تعريب جهاز Samsung عبر ADB", commands: ["adb shell settings put system system_locales ar-YE", "adb shell setprop persist.sys.locale ar-YE", "adb shell am broadcast -a android.intent.action.LOCALE_CHANGED"] },
+      { id: "sam_read_csc", labelAr: "قراءة CSC الحالي", label: "Read Current CSC", color: "cyan", description: "عرض كود CSC الحالي والمنطقة", commands: ["adb shell getprop ro.csc.sales_code", "adb shell getprop ril.official_cscver", "adb shell getprop ro.csc.country_code", "adb shell getprop ro.csc.countryiso_code"] },
+      { id: "sam_disable_knox", labelAr: "تعطيل Knox", label: "Disable Knox", color: "red", description: "تعطيل Samsung Knox", commands: ["adb shell pm disable-user com.samsung.android.knox.containercore", "adb shell pm disable-user com.sec.enterprise.knox.attestation"] },
     ],
   },
 ];
@@ -472,12 +577,54 @@ const NOKIA_GROUPS: OperationGroup[] = [
   },
 ];
 
+// ─── UNISOC / SPD (NEW) ─────────────────────────────────────────────────────
+const UNISOC_GROUPS: OperationGroup[] = [
+  {
+    id: "unisoc_modes",
+    titleAr: "Unisoc — أوضاع الدخول",
+    operations: [
+      { id: "spd_download",   labelAr: "Download Mode (SPD Flash)", label: "Download Mode",    color: "red",    description: "دخول وضع Download لاستخدام SPD Flash Tool", commands: ["adb reboot download"] },
+      { id: "spd_fastboot",   labelAr: "Fastboot Mode",             label: "Enter Fastboot",   color: "orange", description: "دخول وضع Fastboot",                          commands: ["adb reboot bootloader"] },
+      { id: "spd_recovery",   labelAr: "Recovery Mode",             label: "Enter Recovery",   color: "orange", description: "دخول وضع Recovery",                          commands: ["adb reboot recovery"] },
+      { id: "spd_fdl_mode",   labelAr: "FDL Mode (SPD)",           label: "FDL Mode",         color: "red",    description: "دخول وضع FDL لأجهزة Unisoc",                 commands: ["adb reboot fdl"] },
+    ],
+  },
+  {
+    id: "unisoc_frp",
+    titleAr: "Unisoc — FRP Bypass",
+    operations: [
+      { id: "spd_frp_adb",     labelAr: "FRP Bypass [ADB]",        label: "FRP Bypass ADB",   color: "green",  description: "إزالة FRP لأجهزة Unisoc عبر ADB",  commands: ['adb shell content insert --uri content://settings/secure --bind name:s:"user_setup_complete" --bind value:s:"1"', "adb shell settings put global device_provisioned 1", "adb shell pm clear com.google.android.gms", "adb reboot"] },
+      { id: "spd_frp_fastboot",labelAr: "Erase FRP [Fastboot]",    label: "Erase FRP",        color: "red",    description: "مسح FRP عبر Fastboot لأجهزة Unisoc", commands: ["fastboot erase frp", "fastboot reboot"] },
+      { id: "spd_factory_reset",labelAr: "Factory Reset [SPD]",    label: "Factory Reset",    color: "red",    description: "إعادة ضبط المصنع لأجهزة Unisoc",    commands: ["fastboot erase userdata", "fastboot erase cache", "fastboot reboot"] },
+    ],
+  },
+  {
+    id: "unisoc_flash",
+    titleAr: "Unisoc — Flash & Repair",
+    operations: [
+      { id: "spd_flash_boot",    labelAr: "Flash Boot.img",       label: "Flash Boot",      color: "blue",   description: "فلاش ملف Boot.img لأجهزة Unisoc",   commands: ["fastboot flash boot boot.img"] },
+      { id: "spd_flash_recovery",labelAr: "Flash Recovery.img",   label: "Flash Recovery",  color: "blue",   description: "فلاش ملف Recovery.img",              commands: ["fastboot flash recovery recovery.img"] },
+      { id: "spd_wipe_all",      labelAr: "Wipe All Data",        label: "Wipe All",        color: "red",    description: "مسح جميع البيانات",                  commands: ["fastboot erase userdata", "fastboot erase cache", "fastboot erase frp", "fastboot reboot"] },
+    ],
+  },
+  {
+    id: "unisoc_info",
+    titleAr: "Unisoc — معلومات الشريحة",
+    operations: [
+      { id: "spd_chipset",   labelAr: "قراءة معلومات Unisoc",    label: "Unisoc Chipset Info", color: "purple", description: "قراءة معلومات شريحة Unisoc/SPD",     commands: ["adb shell getprop ro.board.platform", "adb shell getprop ro.hardware", "adb shell cat /proc/cpuinfo | grep Hardware"] },
+      { id: "spd_baseband",  labelAr: "قراءة Baseband Version",  label: "Baseband Version",    color: "purple", description: "قراءة نسخة الموديم",                 commands: ["adb shell getprop gsm.version.baseband"] },
+      { id: "spd_bl_status", labelAr: "حالة Bootloader",         label: "BL Status",           color: "blue",   description: "فحص حالة قفل Bootloader",             commands: ["adb shell getprop ro.boot.flash.locked", "adb shell getprop ro.secure"] },
+    ],
+  },
+];
+
 // ─── BRANDS EXPORT ───────────────────────────────────────────────────────────
 export const BRANDS: Brand[] = [
   { id: "general",   name: "General",             nameAr: "عام",                    chipset: "All Chipsets",              color: "#3B82F6", groups: GENERAL_GROUPS },
   { id: "frp",       name: "FRP — All Brands",    nameAr: "FRP — كل الماركات",     chipset: "Universal",                 color: "#059669", groups: FRP_GROUPS },
   { id: "qualcomm",  name: "Qualcomm / Snapdragon",nameAr: "Qualcomm / Snapdragon", chipset: "Snapdragon",                color: "#D40000", groups: QUALCOMM_GROUPS },
   { id: "mtk",       name: "MediaTek / Dimensity", nameAr: "MediaTek / Dimensity",  chipset: "Helio / Dimensity",         color: "#E65C00", groups: MTK_GROUPS },
+  { id: "unisoc",    name: "Unisoc / SPD",         nameAr: "Unisoc / SPD",           chipset: "Tiger / SC Series",         color: "#7C3AED", groups: UNISOC_GROUPS },
   { id: "samsung",   name: "Samsung",             nameAr: "Samsung",                chipset: "Exynos / Snapdragon",       color: "#1428A0", groups: SAMSUNG_GROUPS },
   { id: "xiaomi",    name: "Xiaomi / Redmi / Poco",nameAr: "Xiaomi / Redmi",        chipset: "Snapdragon / MTK",          color: "#FF6900", groups: XIAOMI_GROUPS },
   { id: "huawei",    name: "Huawei / Honor",      nameAr: "Huawei / Honor",         chipset: "Kirin / Snapdragon",        color: "#CF0A2C", groups: HUAWEI_GROUPS },
