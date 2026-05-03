@@ -105,8 +105,8 @@ export function RepairTickets() {
               <option value="high">عالي</option>
               <option value="urgent">عاجل</option>
             </select>
-            <input type="number" placeholder="التكلفة" value={form.cost || ""} onChange={e => setForm({ ...form, cost: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none focus:border-cyan-700/50" />
-            <input type="number" placeholder="تكلفة القطع" value={form.partsCost || ""} onChange={e => setForm({ ...form, partsCost: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none focus:border-cyan-700/50" />
+            <input type="number" placeholder="التكلفة" value={form.cost ?? ""} onChange={e => setForm({ ...form, cost: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none focus:border-cyan-700/50" />
+            <input type="number" placeholder="تكلفة القطع" value={form.partsCost ?? ""} onChange={e => setForm({ ...form, partsCost: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none focus:border-cyan-700/50" />
             <input type="date" placeholder="موعد التسليم" value={form.estimatedDate || ""} onChange={e => setForm({ ...form, estimatedDate: e.target.value })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white outline-none focus:border-cyan-700/50" />
           </div>
           <div className="flex gap-2 justify-end">
