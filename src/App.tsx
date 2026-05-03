@@ -116,11 +116,31 @@ export default function App() {
     setDeviceModel("");
     setAndroidVersion("");
     setSerialNo("");
+    setScanResult(null);
+    setShowScan(false);
   }, [addLog]);
 
   const handleOperation = useCallback((op: Operation) => {
     setSelectedOp(op);
     if (runningOpId) return;
+
+    if (op.isScan) {
+      setShowScan(true);
+      setScanResult(null);
+      setScanning(true);
+      setOpsRun((v) => v + 1);
+      setLastOps((prev) => [op, ...prev.filter((item) => item.id !== op.id)].slice(0, 6));
+      addLog("system", `🔍 فحص: ${op.labelAr}`);
+      op.commands.forEach((cmd, i) => setTimeout(() => addLog("cmd", cmd), i * 130));
+      setTimeout(() => {
+        const result = generateFakeScanResult();
+        setScanResult(result);
+        setScanning(false);
+        addLog("success", `✓ اكتمل الفحص — ${result.brand} ${result.model}`);
+      }, op.commands.length * 130 + 700);
+      return;
+    }
+
     setRunningOpId(op.id);
     setOpsRun((v) => v + 1);
     setLastOps((prev) => [op, ...prev.filter((item) => item.id !== op.id)].slice(0, 6));
