@@ -49,9 +49,11 @@ export function InvoiceSystem() {
     reload();
   };
 
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
   const handlePrint = (inv: Invoice) => {
     const printContent = `
-<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${inv.invoiceNumber}</title>
+<!DOCTYPE html><html dir="rtl"><head><meta charset="UTF-8"><title>فاتورة ${esc(inv.invoiceNumber)}</title>
 <style>body{font-family:Arial,sans-serif;padding:20px;max-width:400px;margin:auto;font-size:12px}
 h2{text-align:center;border-bottom:2px solid #000;padding-bottom:8px}
 table{width:100%;border-collapse:collapse;margin:10px 0}
@@ -59,10 +61,10 @@ td,th{border:1px solid #ccc;padding:4px 6px;text-align:right}
 th{background:#f0f0f0}.total{font-weight:bold;font-size:14px}
 .footer{text-align:center;margin-top:15px;font-size:10px;color:#666}</style></head>
 <body><h2>Yemen Mobile Dev Tool</h2>
-<div><strong>فاتورة:</strong> ${inv.invoiceNumber} · <strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleDateString("ar")}</div>
-<div><strong>العميل:</strong> ${inv.customerName} · <strong>الهاتف:</strong> ${inv.customerPhone}</div>
+<div><strong>فاتورة:</strong> ${esc(inv.invoiceNumber)} · <strong>التاريخ:</strong> ${new Date(inv.createdAt).toLocaleDateString("ar")}</div>
+<div><strong>العميل:</strong> ${esc(inv.customerName)} · <strong>الهاتف:</strong> ${esc(inv.customerPhone)}</div>
 <table><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr>
-${inv.items.map(i => `<tr><td>${i.name}</td><td>${i.quantity}</td><td>${i.unitPrice}</td><td>${i.total}</td></tr>`).join("")}
+${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.unitPrice}</td><td>${i.total}</td></tr>`).join("")}
 </table>
 <div>أجرة العمل: ${inv.laborCost} ر.ي</div>
 <div>الخصم: ${inv.discount} ر.ي</div>

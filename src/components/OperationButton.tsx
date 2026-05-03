@@ -52,7 +52,7 @@ export function OperationButton({ operation, onClick, active, running, favorite,
       </div>
 
       {/* Favorite star */}
-      {favorite && (
+      {favorite && !running && (
         <span className="absolute top-2 left-2 text-yellow-400 text-[10px]">★</span>
       )}
 

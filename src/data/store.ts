@@ -109,13 +109,15 @@ function generateId(): string {
 }
 
 function generateTicketNumber(): string {
-  const count = getTickets().length + 1;
-  return `T-${String(count).padStart(4, "0")}`;
+  const counter = Number(localStorage.getItem("ticket_counter") || "0") + 1;
+  localStorage.setItem("ticket_counter", String(counter));
+  return `T-${String(counter).padStart(4, "0")}`;
 }
 
 function generateInvoiceNumber(): string {
-  const count = getInvoices().length + 1;
-  return `INV-${String(count).padStart(4, "0")}`;
+  const counter = Number(localStorage.getItem("invoice_counter") || "0") + 1;
+  localStorage.setItem("invoice_counter", String(counter));
+  return `INV-${String(counter).padStart(4, "0")}`;
 }
 
 // ─── TICKETS ────────────────────────────────────────────────────────────────
