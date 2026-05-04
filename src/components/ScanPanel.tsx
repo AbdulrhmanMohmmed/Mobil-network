@@ -79,7 +79,7 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
       <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.05]">
         <div className="flex items-center gap-2">
           {scanning ? (
-            <Loader size={12} className="text-cyan-400 animate-spin" />
+            <Loader size={12} className="text-blue-400 animate-spin" />
           ) : (
             <CheckCircle size={12} className="text-green-400" />
           )}
@@ -114,7 +114,7 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
               {progress > (i + 1) * 12 ? (
                 <span className="text-green-500">✓</span>
               ) : progress > i * 12 ? (
-                <span className="text-cyan-400 animate-pulse">●</span>
+                <span className="text-blue-400 animate-pulse">●</span>
               ) : (
                 <span className="text-gray-700">○</span>
               )}
@@ -130,10 +130,10 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
           {/* Device header */}
           <div className="bg-gradient-to-r from-cyan-900/30 to-blue-900/30 rounded-lg p-3 border border-cyan-700/20">
             <div className="flex items-center gap-2 mb-1">
-              <Smartphone size={14} className="text-cyan-400" />
+              <Smartphone size={14} className="text-blue-400" />
               <span className="text-sm font-bold text-white">{result.brand} {result.model}</span>
             </div>
-            <div className="text-[10px] text-cyan-300/70 font-mono">
+            <div className="text-[10px] text-blue-300/70 font-mono">
               Android {result.android} (SDK {result.sdk}) · {new Date(result.timestamp).toLocaleTimeString("ar")}
             </div>
           </div>
@@ -143,7 +143,7 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
             <div className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-1.5 flex items-center gap-1">
               <Smartphone size={9} /> هوية الجهاز
             </div>
-            <div className="bg-black/30 rounded-lg px-2 border border-white/[0.05]">
+            <div className="bg-[#161b22] rounded-lg px-2 border border-white/[0.05]">
               <InfoRow icon={Smartphone} label="IMEI" value={result.imei} />
               <InfoRow icon={Smartphone} label="Serial" value={result.serial} />
             </div>
@@ -154,7 +154,7 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
             <div className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-1.5 flex items-center gap-1">
               <Wifi size={9} /> الشبكة والسيم
             </div>
-            <div className="bg-black/30 rounded-lg px-2 border border-white/[0.05]">
+            <div className="bg-[#161b22] rounded-lg px-2 border border-white/[0.05]">
               <InfoRow icon={Wifi} label="المشغل" value={result.carrier || "—"} />
               <InfoRow icon={Wifi} label="MCC/MNC" value={result.numeric || "—"} highlight={result.numeric === "42102" ? "good" : undefined} />
               <InfoRow icon={Wifi} label="نوع الشبكة" value={NETWORK_MODE_LABELS[result.networkMode] ?? result.networkMode} highlight={result.networkMode === "9" || result.networkMode === "11" ? "good" : "warn"} />
@@ -167,7 +167,7 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
             <div className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-1.5 flex items-center gap-1">
               <Cpu size={9} /> الأجهزة
             </div>
-            <div className="bg-black/30 rounded-lg px-2 border border-white/[0.05]">
+            <div className="bg-[#161b22] rounded-lg px-2 border border-white/[0.05]">
               <InfoRow icon={Battery} label="البطارية" value={result.battery} highlight={parseInt(result.battery) > 50 ? "good" : parseInt(result.battery) > 20 ? "warn" : "bad"} />
               <InfoRow icon={HardDrive} label="التخزين" value={result.storage} />
             </div>
@@ -178,7 +178,7 @@ export function ScanPanel({ result, scanning, onClose }: ScanPanelProps) {
             <div className="text-[9px] font-bold text-gray-600 uppercase tracking-widest mb-1.5 flex items-center gap-1">
               <Shield size={9} /> حالة FRP
             </div>
-            <div className="bg-black/30 rounded-lg px-2 border border-white/[0.05]">
+            <div className="bg-[#161b22] rounded-lg px-2 border border-white/[0.05]">
               <InfoRow icon={Shield} label="Setup Complete" value={result.frpStatus === "1" ? "مكتمل ✓" : "غير مكتمل ✗"} highlight={result.frpStatus === "1" ? "good" : "bad"} />
               <InfoRow icon={Shield} label="Device Provisioned" value={result.deviceProvisioned === "1" ? "مفعّل ✓" : "غير مفعّل ✗"} highlight={result.deviceProvisioned === "1" ? "good" : "bad"} />
             </div>

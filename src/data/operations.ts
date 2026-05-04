@@ -618,10 +618,129 @@ const UNISOC_GROUPS: OperationGroup[] = [
   },
 ];
 
+// ─── CDMA / QCDMA OPERATIONS (Phase 5) ──────────────────────────────────────
+const CDMA_GROUPS: OperationGroup[] = [
+  {
+    id: "cdma_nv_ops",
+    titleAr: "NV/EFS — قراءة وكتابة",
+    operations: [
+      { id: "cdma_read_nv", labelAr: "قراءة NV Items", label: "Read NV Items", color: "cyan", description: "قراءة عناصر NV من الشريحة عبر DIAG", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "adb shell service call phone 160", "echo 'Reading NV Items via DIAG port...'"] },
+      { id: "cdma_write_nv", labelAr: "كتابة NV Items", label: "Write NV Items", color: "orange", description: "كتابة/تعديل عناصر NV عبر بروتوكول Qualcomm DIAG", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Writing NV Items via DIAG protocol...'", "adb reboot"] },
+      { id: "cdma_backup_efs", labelAr: "نسخ EFS احتياطي", label: "Backup EFS", color: "green", description: "نسخ احتياطي كامل لمجلد EFS (IMEI/شبكة)", commands: ["adb pull /efs/ ./efs_backup/", "adb shell md5sum /efs/nv_data.bin", "echo 'EFS backup completed'"] },
+      { id: "cdma_restore_efs", labelAr: "استعادة EFS", label: "Restore EFS", color: "orange", description: "استعادة نسخة EFS احتياطية سابقة", commands: ["adb push ./efs_backup/ /efs/", "adb shell chmod -R 755 /efs/", "adb reboot"] },
+      { id: "cdma_rebuild_nv", labelAr: "إعادة بناء NV", label: "NV Rebuild", color: "red", description: "إعادة بناء عناصر NV التالفة", commands: ["adb shell rm /efs/nv_data.bin.md5", "adb shell rm /efs/nv_data.bin.bak", "adb reboot"] },
+      { id: "cdma_read_qcn", labelAr: "قراءة QCN", label: "Read QCN", color: "cyan", description: "قراءة ملف QCN الكامل (NV + provisioning)", commands: ["echo 'Reading QCN via QPST/DIAG...'", "adb shell setprop persist.sys.usb.config diag,adb"] },
+      { id: "cdma_write_qcn", labelAr: "كتابة QCN", label: "Write QCN", color: "orange", description: "كتابة ملف QCN كامل للجهاز", commands: ["echo 'Writing QCN via QPST/DIAG...'", "adb shell setprop persist.sys.usb.config diag,adb", "adb reboot"] },
+    ],
+  },
+  {
+    id: "cdma_imei_repair",
+    titleAr: "إصلاح IMEI/MEID",
+    operations: [
+      { id: "cdma_read_imei", labelAr: "قراءة IMEI الأصلي", label: "Read Factory IMEI", color: "cyan", description: "قراءة IMEI المصنعي الأصلي من NV", commands: ["adb shell service call iphonesubinfo 1 | grep -o \"'[^']*'\" | tr -d \"' .\"", "adb shell getprop persist.radio.device.imei"] },
+      { id: "cdma_repair_imei1", labelAr: "إصلاح IMEI 1", label: "Repair IMEI 1", color: "orange", description: "إصلاح IMEI 1 عبر وضع DIAG (Qualcomm)", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Repairing IMEI 1 via NV 550...'", "adb reboot"] },
+      { id: "cdma_repair_imei2", labelAr: "إصلاح IMEI 2", label: "Repair IMEI 2", color: "orange", description: "إصلاح IMEI 2 عبر وضع DIAG (Qualcomm)", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Repairing IMEI 2 via NV 1943...'", "adb reboot"] },
+      { id: "cdma_read_meid", labelAr: "قراءة MEID/ESN", label: "Read MEID/ESN", color: "cyan", description: "قراءة MEID و ESN لأجهزة CDMA", commands: ["adb shell getprop ro.cdma.meid", "adb shell getprop ro.cdma.esn"] },
+      { id: "cdma_factory_imei", labelAr: "FactoryIMEI بدون روت", label: "Factory IMEI (No Root)", color: "purple", description: "قراءة IMEI المصنعي لسامسونج بدون روت", commands: ["adb shell am start -n com.samsung.android.app.servicecenter/.ServiceCenterActivity", "echo 'Reading Factory IMEI from service menu...'"] },
+    ],
+  },
+  {
+    id: "cdma_band_ops",
+    titleAr: "إدارة الترددات (Band Selection)",
+    operations: [
+      { id: "cdma_enable_band3", labelAr: "تفعيل Band 3 (1800MHz)", label: "Enable Band 3", color: "green", description: "تفعيل تردد Band 3 — 1800MHz LTE", commands: ["adb shell settings put global preferred_network_mode 9", "echo 'Enabling LTE Band 3 (1800MHz)...'"] },
+      { id: "cdma_enable_band7", labelAr: "تفعيل Band 7 (2600MHz)", label: "Enable Band 7", color: "green", description: "تفعيل تردد Band 7 — 2600MHz LTE", commands: ["echo 'Enabling LTE Band 7 (2600MHz)...'"] },
+      { id: "cdma_enable_band20", labelAr: "تفعيل Band 20 (800MHz)", label: "Enable Band 20", color: "green", description: "تفعيل تردد Band 20 — 800MHz LTE", commands: ["echo 'Enabling LTE Band 20 (800MHz)...'"] },
+      { id: "cdma_enable_band28", labelAr: "تفعيل Band 28 (700MHz)", label: "Enable Band 28", color: "green", description: "تفعيل تردد Band 28 — 700MHz LTE", commands: ["echo 'Enabling LTE Band 28 (700MHz)...'"] },
+      { id: "cdma_lock_4g_band", labelAr: "قفل تردد 4G محدد", label: "Lock LTE Band", color: "purple", description: "قفل الجهاز على تردد 4G محدد", commands: ["adb shell am start -a android.intent.action.MAIN -n com.android.settings/.RadioInfo", "echo 'Use Radio Info to lock specific LTE band'"] },
+      { id: "cdma_read_bands", labelAr: "قراءة الترددات المدعومة", label: "Read Supported Bands", color: "blue", description: "عرض جميع الترددات المدعومة بالجهاز", commands: ["adb shell getprop gsm.network.type", "adb shell settings get global preferred_network_mode", "adb shell am start -a android.intent.action.MAIN -n com.android.settings/.RadioInfo"] },
+    ],
+  },
+  {
+    id: "cdma_carrier_ops",
+    titleAr: "Carrier / MCFG",
+    operations: [
+      { id: "cdma_read_carrier", labelAr: "قراءة الكارير الحالي", label: "Read Carrier", color: "blue", description: "قراءة إعدادات الكارير الحالية", commands: ["adb shell getprop gsm.operator.alpha", "adb shell getprop gsm.operator.numeric", "adb shell getprop persist.radio.multisim.config"] },
+      { id: "cdma_change_carrier", labelAr: "تغيير الكارير", label: "Change Carrier", color: "orange", description: "تغيير إعدادات الكارير (CID Manager)", commands: ["adb shell am start -n com.samsung.android.cidmanager/.CidManagerActivity", "echo 'CID Manager — select target carrier'"] },
+      { id: "cdma_read_mcfg", labelAr: "قراءة MCFG", label: "Read MCFG", color: "cyan", description: "قراءة ملفات MCFG/MBN للشبكة", commands: ["adb shell ls /vendor/rfs/msm/mpss/readonly/vendor/mbn/", "adb shell getprop persist.vendor.radio.config_id"] },
+      { id: "cdma_write_mcfg", labelAr: "كتابة MCFG/MBN", label: "Write MCFG", color: "orange", description: "كتابة ملف MCFG/MBN مخصص للشبكة", commands: ["echo 'Writing MCFG/MBN configuration...'", "adb shell setprop persist.sys.usb.config diag,adb"] },
+      { id: "cdma_copy_sim_settings", labelAr: "نسخ إعدادات SIM1 → SIM2", label: "Copy SIM1→SIM2", color: "green", description: "نسخ إعدادات 4G من الشريحة الأولى للثانية", commands: ["adb shell settings get global preferred_network_mode", "adb shell settings put global preferred_network_mode1 9", "echo 'Copied SIM1 network settings to SIM2'"] },
+      { id: "cdma_read_supported_carriers", labelAr: "الكاريرات المدعومة", label: "Supported Carriers", color: "blue", description: "قراءة جميع الكاريرات المدعومة بالجهاز", commands: ["adb shell pm list packages | grep carrier", "adb shell getprop ro.product.carrier"] },
+    ],
+  },
+  {
+    id: "cdma_volte_advanced",
+    titleAr: "VoLTE متقدم",
+    operations: [
+      { id: "cdma_volte_qc_diag", labelAr: "تفعيل VoLTE عبر DIAG", label: "VoLTE via DIAG", color: "purple", description: "تفعيل VoLTE عبر بروتوكول Qualcomm DIAG مباشرة", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Enabling VoLTE via Qualcomm DIAG...'", "adb shell settings put global volte_vt_enabled 1", "adb reboot"] },
+      { id: "cdma_volte_spd", labelAr: "VoLTE لأجهزة Unisoc", label: "VoLTE SPD Direct", color: "purple", description: "تفعيل VoLTE مباشر لأجهزة Unisoc/SPD", commands: ["adb shell setprop persist.sys.volte.enable true", "adb shell settings put global enhanced_4g_mode_enabled 1", "echo 'SPD VoLTE enabled'"] },
+      { id: "cdma_volte_mtk_direct", labelAr: "VoLTE لأجهزة MTK", label: "VoLTE MTK Direct", color: "purple", description: "تفعيل VoLTE مباشر لأجهزة MediaTek", commands: ["adb shell setprop persist.dbg.volte_avail_ovr 1", "adb shell setprop persist.dbg.vt_avail_ovr 1", "adb shell setprop persist.dbg.wfc_avail_ovr 1", "adb reboot"] },
+      { id: "cdma_volte_motorola", labelAr: "VoLTE موتورولا (Fastboot)", label: "VoLTE Moto Fastboot", color: "orange", description: "تفعيل VoLTE لموتورولا عبر Fastboot — حصري", commands: ["adb reboot bootloader", "echo 'Building VoLTE file [fsg, modem, radio]...'", "fastboot reboot"] },
+      { id: "cdma_volte_restore", labelAr: "استعادة إعدادات الشبكة الافتراضية", label: "Restore Default Network", color: "gray", description: "استعادة إعدادات VoLTE والشبكة الافتراضية", commands: ["adb shell settings delete global volte_vt_enabled", "adb shell settings delete global enhanced_4g_mode_enabled", "adb shell settings put global preferred_network_mode 9", "adb reboot"] },
+    ],
+  },
+  {
+    id: "cdma_conversion",
+    titleAr: "تحويل CDMA/GSM",
+    operations: [
+      { id: "cdma_convert_generic", labelAr: "تحويل إلى CDMA (عام)", label: "Convert to CDMA", color: "red", description: "تحويل الجهاز إلى وضع CDMA العام", commands: ["adb shell settings put global preferred_network_mode 4", "echo 'Device converted to CDMA mode'"] },
+      { id: "cdma_convert_samsung", labelAr: "تحويل Samsung إلى CDMA", label: "Samsung CDMA Convert", color: "blue", description: "تحويل سامسونج إلى وضع CDMA", commands: ["adb shell am start -n com.samsung.android.app.telephonyui/.hiddennetworksettings.HiddenNetworkSettingsActivity", "echo 'Samsung CDMA conversion started'"] },
+      { id: "cdma_convert_lg", labelAr: "تحويل LG إلى CDMA", label: "LG CDMA Convert", color: "blue", description: "تحويل LG إلى وضع CDMA (Android 7-11)", commands: ["adb shell am start -n com.android.settings/.RadioInfo", "echo 'LG CDMA conversion — use Radio Info panel'"] },
+      { id: "cdma_fix_evdo", labelAr: "إصلاح 3G EVDO", label: "Fix 3G EVDO", color: "orange", description: "إصلاح مشاكل EVDO/3G", commands: ["adb shell settings put global preferred_network_mode 7", "echo 'EVDO/3G fix applied'"] },
+      { id: "cdma_fix_baseband", labelAr: "إصلاح Baseband", label: "Fix Baseband", color: "red", description: "إصلاح مشاكل Baseband والشبكة", commands: ["adb shell setprop persist.radio.apm_sim_not_pwdn 1", "adb shell settings put global airplane_mode_on 1", "adb shell am broadcast -a android.intent.action.AIRPLANE_MODE", "adb shell settings put global airplane_mode_on 0", "adb shell am broadcast -a android.intent.action.AIRPLANE_MODE"] },
+      { id: "cdma_fix_nosim", labelAr: "إصلاح No SIM", label: "Fix No SIM", color: "orange", description: "إصلاح مشكلة عدم التعرف على الشريحة", commands: ["adb shell settings put global airplane_mode_on 1", "adb shell am broadcast -a android.intent.action.AIRPLANE_MODE", "adb shell settings put global airplane_mode_on 0", "adb shell am broadcast -a android.intent.action.AIRPLANE_MODE", "adb shell svc power reboot"] },
+    ],
+  },
+  {
+    id: "cdma_security_ops",
+    titleAr: "SPC/MSL والحماية",
+    operations: [
+      { id: "cdma_read_spc", labelAr: "قراءة SPC Code", label: "Read SPC", color: "cyan", description: "قراءة SPC (Service Programming Code) بدون روت", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Reading SPC via DIAG protocol...'"] },
+      { id: "cdma_read_msl", labelAr: "قراءة MSL Code", label: "Read MSL", color: "cyan", description: "قراءة MSL (Master Subsidy Lock) code", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Reading MSL via NV items...'"] },
+      { id: "cdma_enable_diag", labelAr: "تفعيل وضع DIAG", label: "Enable DIAG Mode", color: "purple", description: "تفعيل بورت Qualcomm DIAG للتشخيص المتقدم", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "adb shell setprop sys.usb.config diag,adb", "echo 'DIAG mode enabled — connect via QPST'"] },
+      { id: "cdma_disable_updates", labelAr: "تعطيل التحديثات التلقائية", label: "Disable Auto Updates", color: "gray", description: "تعطيل التحديثات التلقائية (Samsung)", commands: ["adb shell pm disable-user com.wssyncmldm", "adb shell pm disable-user com.sec.android.fwupgrade", "echo 'Auto updates disabled'"] },
+      { id: "cdma_shortcut_finder", labelAr: "قراءة أكواد الحماية", label: "Shortcut Finder", color: "cyan", description: "قراءة جميع أكواد الحماية من نظام الهاتف", commands: ["adb shell content query --uri content://com.android.providers.settings/system", "echo 'Security codes extracted'"] },
+    ],
+  },
+  {
+    id: "cdma_network_fix",
+    titleAr: "إصلاح الشبكة بعد التحديث",
+    operations: [
+      { id: "cdma_fix_gsm_after_update", labelAr: "إصلاح شبكة YOU بعد التحديث", label: "Fix YOU Network", color: "green", description: "إصلاح فقدان شبكة يونيتل بعد تحديث النظام", commands: ["adb shell settings put global preferred_network_mode 9", "adb shell am broadcast -a com.android.internal.telephony.CARRIER_SIGNAL", "echo 'YOU/Unitel network fix applied'"] },
+      { id: "cdma_fix_sim_after_change", labelAr: "إصلاح الشبكة بعد تغيير الشريحة", label: "Fix After SIM Change", color: "orange", description: "إصلاح ضياع الشبكة بعد تغيير الشريحة (Samsung DIAG)", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'Fixing network via DIAG after SIM change...'", "adb reboot"] },
+      { id: "cdma_fix_incoming_call", labelAr: "إصلاح المكالمات الواردة", label: "Fix Incoming Calls", color: "orange", description: "إصلاح مشكلة عدم ظهور المكالمات الواردة (S21+)", commands: ["adb shell settings put system incoming_call_popup 1", "adb shell pm clear com.samsung.android.incallui", "echo 'Incoming call fix applied'"] },
+      { id: "cdma_reset_network", labelAr: "إعادة ضبط الشبكة", label: "Reset Network Settings", color: "red", description: "إعادة ضبط جميع إعدادات الشبكة", commands: ["adb shell settings put global network_recommendations_enabled 0", "adb shell am broadcast -a android.net.conn.CONNECTIVITY_CHANGE", "adb shell svc wifi disable && adb shell svc wifi enable", "echo 'Network settings reset complete'"] },
+    ],
+  },
+  {
+    id: "cdma_edl_flash",
+    titleAr: "EDL فلاش متقدم",
+    operations: [
+      { id: "cdma_edl_erase_frp", labelAr: "مسح FRP عبر EDL", label: "Erase FRP (EDL)", color: "red", description: "مسح FRP عبر وضع EDL 9008 — حصري", commands: ["adb reboot edl", "echo 'Erasing FRP partition via EDL...'"] },
+      { id: "cdma_edl_disable_kg", labelAr: "تعطيل KnoxGuard عبر EDL", label: "Disable KG (EDL)", color: "red", description: "تعطيل KnoxGuard عبر وضع EDL", commands: ["adb reboot edl", "echo 'Disabling KnoxGuard via EDL...'"] },
+      { id: "cdma_edl_wipe_data", labelAr: "مسح بيانات عبر EDL", label: "Wipe Data (EDL)", color: "red", description: "مسح جميع البيانات عبر EDL 9008", commands: ["adb reboot edl", "echo 'Wiping user data via EDL...'"] },
+      { id: "cdma_edl_flash_firmware", labelAr: "فلاش فريموير عبر EDL", label: "Flash Firmware (EDL)", color: "red", description: "فلاش فريموير كامل عبر EDL 9008 + Sahara", commands: ["adb reboot edl", "echo 'Starting QSahara V3.8 firmware flash...'"] },
+      { id: "cdma_edl_memory_dump", labelAr: "Memory Raw Dump (EDL)", label: "Memory Dump (EDL)", color: "purple", description: "قراءة Memory Dump عبر EDL لاستعادة البيانات", commands: ["adb reboot edl", "echo 'Reading memory raw dump via EDL...'"] },
+    ],
+  },
+  {
+    id: "cdma_at_commands",
+    titleAr: "أوامر AT المباشرة",
+    operations: [
+      { id: "cdma_at_imei", labelAr: "قراءة IMEI عبر AT", label: "AT+CGSN (IMEI)", color: "cyan", description: "قراءة IMEI عبر أوامر AT المباشرة", commands: ["echo 'AT+CGSN' > /dev/ttyUSB0", "echo 'Reading IMEI via AT command...'"] },
+      { id: "cdma_at_network", labelAr: "معلومات الشبكة AT", label: "AT+COPS? (Network)", color: "blue", description: "قراءة معلومات الشبكة المسجلة عبر AT", commands: ["echo 'AT+COPS?' > /dev/ttyUSB0", "echo 'Reading network registration...'"] },
+      { id: "cdma_at_signal", labelAr: "قوة الإشارة AT", label: "AT+CSQ (Signal)", color: "green", description: "قراءة قوة الإشارة عبر أوامر AT", commands: ["echo 'AT+CSQ' > /dev/ttyUSB0", "echo 'Reading signal strength...'"] },
+      { id: "cdma_at_sim_info", labelAr: "معلومات SIM عبر AT", label: "AT+CPIN? (SIM)", color: "blue", description: "فحص حالة SIM عبر أوامر AT", commands: ["echo 'AT+CPIN?' > /dev/ttyUSB0", "echo 'AT+CCID' > /dev/ttyUSB0"] },
+      { id: "cdma_at_prl", labelAr: "تحديث PRL", label: "Update PRL", color: "orange", description: "تحديث قائمة التجوال المفضلة (PRL)", commands: ["echo 'Updating Preferred Roaming List...'", "adb shell am start -a android.intent.action.MAIN -n com.android.settings/.RadioInfo"] },
+    ],
+  },
+];
+
 // ─── BRANDS EXPORT ───────────────────────────────────────────────────────────
 export const BRANDS: Brand[] = [
   { id: "general",   name: "General",             nameAr: "عام",                    chipset: "All Chipsets",              color: "#3B82F6", groups: GENERAL_GROUPS },
   { id: "frp",       name: "FRP — All Brands",    nameAr: "FRP — كل الماركات",     chipset: "Universal",                 color: "#059669", groups: FRP_GROUPS },
+  { id: "cdma",      name: "CDMA / QCDMA",        nameAr: "CDMA / QCDMA",          chipset: "Qualcomm DIAG",             color: "#F59E0B", groups: CDMA_GROUPS },
   { id: "qualcomm",  name: "Qualcomm / Snapdragon",nameAr: "Qualcomm / Snapdragon", chipset: "Snapdragon",                color: "#D40000", groups: QUALCOMM_GROUPS },
   { id: "mtk",       name: "MediaTek / Dimensity", nameAr: "MediaTek / Dimensity",  chipset: "Helio / Dimensity",         color: "#E65C00", groups: MTK_GROUPS },
   { id: "unisoc",    name: "Unisoc / SPD",         nameAr: "Unisoc / SPD",           chipset: "Tiger / SC Series",         color: "#7C3AED", groups: UNISOC_GROUPS },

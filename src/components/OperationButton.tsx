@@ -2,16 +2,16 @@ import { Operation } from "../data/operations";
 
 const COLOR_MAP: Record<
   Operation["color"],
-  { bg: string; border: string; text: string; glow: string; bar: string }
+  { bg: string; border: string; text: string; accent: string }
 > = {
-  blue:   { bg: "bg-blue-950/70",   border: "border-blue-700/60",   text: "text-blue-200",   glow: "hover:shadow-blue-900/40",   bar: "bg-blue-500" },
-  green:  { bg: "bg-green-950/70",  border: "border-green-700/60",  text: "text-green-200",  glow: "hover:shadow-green-900/40",  bar: "bg-green-500" },
-  orange: { bg: "bg-orange-950/70", border: "border-orange-700/60", text: "text-orange-200", glow: "hover:shadow-orange-900/40", bar: "bg-orange-500" },
-  red:    { bg: "bg-red-950/70",    border: "border-red-700/60",    text: "text-red-200",    glow: "hover:shadow-red-900/40",    bar: "bg-red-500" },
-  purple: { bg: "bg-purple-950/70", border: "border-purple-700/60", text: "text-purple-200", glow: "hover:shadow-purple-900/40", bar: "bg-purple-500" },
-  cyan:   { bg: "bg-cyan-950/70",   border: "border-cyan-700/60",   text: "text-cyan-200",   glow: "hover:shadow-cyan-900/40",   bar: "bg-cyan-400" },
-  yellow: { bg: "bg-yellow-950/70", border: "border-yellow-700/60", text: "text-yellow-200", glow: "hover:shadow-yellow-900/40", bar: "bg-yellow-400" },
-  gray:   { bg: "bg-gray-800/70",   border: "border-gray-600/60",   text: "text-gray-300",   glow: "hover:shadow-gray-700/40",   bar: "bg-gray-500" },
+  blue:   { bg: "bg-blue-950/30",   border: "border-blue-800/20",   text: "text-blue-300",   accent: "bg-blue-500" },
+  green:  { bg: "bg-emerald-950/30",border: "border-emerald-800/20",text: "text-emerald-300",accent: "bg-emerald-500" },
+  orange: { bg: "bg-orange-950/30", border: "border-orange-800/20", text: "text-orange-300", accent: "bg-orange-500" },
+  red:    { bg: "bg-red-950/30",    border: "border-red-800/20",    text: "text-red-300",    accent: "bg-red-500" },
+  purple: { bg: "bg-purple-950/30", border: "border-purple-800/20", text: "text-purple-300", accent: "bg-purple-500" },
+  cyan:   { bg: "bg-cyan-950/30",   border: "border-cyan-800/20",   text: "text-cyan-300",   accent: "bg-cyan-400" },
+  yellow: { bg: "bg-yellow-950/30", border: "border-yellow-800/20", text: "text-yellow-300", accent: "bg-yellow-400" },
+  gray:   { bg: "bg-gray-900/30",   border: "border-gray-700/20",   text: "text-gray-300",   accent: "bg-gray-500" },
 };
 
 interface OperationButtonProps {
@@ -31,15 +31,15 @@ export function OperationButton({ operation, onClick, active, running, favorite,
       onClick={() => onClick(operation)}
       disabled={running}
       className={`
-        relative w-full text-right rounded-lg border overflow-hidden
-        transition-all duration-150 group
+        relative w-full text-right rounded-xl border overflow-hidden
+        transition-all duration-200 group backdrop-blur-sm
         ${c.bg} ${c.border} ${c.text}
-        ${active ? "ring-1 ring-white/20" : ""}
-        ${running ? "opacity-70 cursor-not-allowed" : `hover:brightness-125 hover:shadow-lg ${c.glow} active:scale-[0.98]`}
+        ${active ? "ring-1 ring-blue-500/30 border-blue-500/20 bg-blue-950/20" : ""}
+        ${running ? "opacity-60 cursor-not-allowed" : "hover:border-white/10 hover:bg-white/[0.04] active:scale-[0.98]"}
       `}
     >
-      {/* Left accent bar */}
-      <span className={`absolute right-0 top-0 bottom-0 w-0.5 ${c.bar} ${active ? "opacity-100" : "opacity-0 group-hover:opacity-60"} transition-opacity`} />
+      {/* Left accent line */}
+      <span className={`absolute right-0 top-1 bottom-1 w-[3px] rounded-full ${c.accent} ${active ? "opacity-100" : "opacity-0 group-hover:opacity-40"} transition-opacity`} />
 
       {/* Running shimmer */}
       {running && (
@@ -47,18 +47,18 @@ export function OperationButton({ operation, onClick, active, running, favorite,
       )}
 
       <div className="px-3 py-3 leading-tight">
-        <div className="font-semibold text-xs truncate">{operation.labelAr}</div>
-        <div className="text-[10px] opacity-40 font-normal mt-0.5 truncate">{operation.label}</div>
+        <div className="font-semibold text-[11px] truncate">{operation.labelAr}</div>
+        <div className="text-[9px] opacity-40 font-normal mt-0.5 truncate font-mono">{operation.label}</div>
       </div>
 
       {/* Favorite star */}
       {favorite && !running && (
-        <span className="absolute top-2 left-2 text-yellow-400 text-[10px] cursor-pointer hover:scale-125 transition-transform" onClick={e => { e.stopPropagation(); onToggleFavorite?.(); }}>★</span>
+        <span className="absolute top-2 left-2 text-amber-400 text-[11px] cursor-pointer hover:scale-125 transition-transform drop-shadow-sm" onClick={e => { e.stopPropagation(); onToggleFavorite?.(); }}>★</span>
       )}
 
-      {/* Running indicator dot */}
+      {/* Running indicator */}
       {running && (
-        <span className={`absolute top-2 left-2 w-1.5 h-1.5 rounded-full ${c.bar} animate-ping`} />
+        <span className={`absolute top-2 left-2 w-2 h-2 rounded-full ${c.accent} animate-ping`} />
       )}
     </button>
   );
