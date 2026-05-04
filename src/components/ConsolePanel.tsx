@@ -14,10 +14,10 @@ interface ConsolePanelProps {
 }
 
 const TYPE_STYLES: Record<LogEntry["type"], string> = {
-  system:  "text-cyan-400",
-  info:    "text-gray-300",
+  system:  "text-blue-400",
+  info:    "text-gray-400",
   cmd:     "text-amber-300",
-  success: "text-green-400",
+  success: "text-emerald-400",
   error:   "text-red-400",
   warn:    "text-yellow-400",
 };
@@ -32,12 +32,12 @@ const TYPE_PREFIX: Record<LogEntry["type"], string> = {
 };
 
 const TYPE_BADGE: Record<LogEntry["type"], string> = {
-  system:  "bg-cyan-900/60 text-cyan-400",
-  info:    "bg-gray-700/60 text-gray-400",
-  cmd:     "bg-amber-900/60 text-amber-300",
-  success: "bg-green-900/60 text-green-400",
-  error:   "bg-red-900/60 text-red-400",
-  warn:    "bg-yellow-900/60 text-yellow-400",
+  system:  "bg-blue-500/15 text-blue-400",
+  info:    "bg-gray-500/15 text-gray-400",
+  cmd:     "bg-amber-500/15 text-amber-300",
+  success: "bg-emerald-500/15 text-emerald-400",
+  error:   "bg-red-500/15 text-red-400",
+  warn:    "bg-yellow-500/15 text-yellow-400",
 };
 
 export function ConsolePanel({ logs, onClear }: ConsolePanelProps) {
@@ -64,44 +64,31 @@ export function ConsolePanel({ logs, onClear }: ConsolePanelProps) {
 
   return (
     <div
-      className="flex flex-col bg-[#080c14] border-t border-white/10 shrink-0 transition-all duration-200"
-      style={{ height: collapsed ? 34 : 190 }}
+      className="flex flex-col bg-[#0a0e17] border-t border-white/[0.06] shrink-0 transition-all duration-300"
+      style={{ height: collapsed ? 36 : 180 }}
     >
       {/* Console header */}
-      <div className="flex items-center justify-between px-3 h-[34px] bg-[#0e1420] border-b border-white/10 shrink-0">
+      <div className="flex items-center justify-between px-4 h-9 bg-[#0d1117] border-b border-white/[0.06] shrink-0">
         <div className="flex items-center gap-2.5">
-          <Terminal size={12} className="text-cyan-400" />
-          <span className="text-[10px] text-gray-400 font-mono font-bold tracking-widest uppercase">Console Output</span>
+          <Terminal size={12} className="text-blue-400" />
+          <span className="text-[10px] text-gray-500 font-semibold">Console</span>
           {logs.length > 0 && (
-            <span className="text-[10px] font-mono text-gray-600">({logs.length})</span>
+            <span className="text-[9px] font-mono text-gray-700 bg-white/[0.03] px-1.5 py-0.5 rounded">{logs.length}</span>
           )}
-          {/* Show last log preview when collapsed */}
           {collapsed && lastLog && (
-            <span className={`text-[10px] font-mono truncate max-w-xs ${TYPE_STYLES[lastLog.type]}`}>
-              — {lastLog.text}
+            <span className={`text-[10px] font-mono truncate max-w-sm ${TYPE_STYLES[lastLog.type]}`}>
+              {lastLog.text}
             </span>
           )}
         </div>
         <div className="flex gap-0.5">
-          <button
-            onClick={copyAll}
-            className="text-gray-600 hover:text-gray-300 p-1.5 rounded transition-colors"
-            title="نسخ الكل"
-          >
-            {copied ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+          <button onClick={copyAll} className="text-gray-600 hover:text-gray-300 p-1.5 rounded-md hover:bg-white/[0.04] transition-all" title="نسخ">
+            {copied ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
           </button>
-          <button
-            onClick={onClear}
-            className="text-gray-600 hover:text-red-400 p-1.5 rounded transition-colors"
-            title="مسح"
-          >
+          <button onClick={onClear} className="text-gray-600 hover:text-red-400 p-1.5 rounded-md hover:bg-white/[0.04] transition-all" title="مسح">
             <Trash2 size={12} />
           </button>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="text-gray-600 hover:text-gray-300 p-1.5 rounded transition-colors"
-            title={collapsed ? "توسيع" : "طي"}
-          >
+          <button onClick={() => setCollapsed(!collapsed)} className="text-gray-600 hover:text-gray-300 p-1.5 rounded-md hover:bg-white/[0.04] transition-all" title={collapsed ? "توسيع" : "طي"}>
             {collapsed ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
         </div>
@@ -109,17 +96,17 @@ export function ConsolePanel({ logs, onClear }: ConsolePanelProps) {
 
       {/* Log lines */}
       {!collapsed && (
-        <div className="flex-1 overflow-y-auto px-3 py-2 space-y-px font-mono text-[11px]">
+        <div className="flex-1 overflow-y-auto px-4 py-2 space-y-px font-mono text-[10px]">
           {logs.length === 0 && (
             <div className="flex items-center gap-2 text-gray-700 mt-2">
               <span className="text-gray-800">$</span>
-              <span>جاهز — اضغط على أي عملية لتنفيذها وعرض الأوامر هنا</span>
+              <span>جاهز — اضغط على أي عملية لتنفيذها</span>
             </div>
           )}
           {logs.map((log) => (
-            <div key={log.id} className="flex gap-2 items-start leading-5 hover:bg-white/[0.02] rounded px-1 -mx-1">
+            <div key={log.id} className="flex gap-2 items-start leading-5 hover:bg-white/[0.02] rounded-md px-1.5 -mx-1.5 transition-colors">
               <span className="text-gray-700 shrink-0 tabular-nums">{log.time}</span>
-              <span className={`shrink-0 text-[9px] font-bold px-1 py-0.5 rounded ${TYPE_BADGE[log.type]}`}>
+              <span className={`shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded-md ${TYPE_BADGE[log.type]}`}>
                 {TYPE_PREFIX[log.type]}
               </span>
               <span className={`${TYPE_STYLES[log.type]} whitespace-pre-wrap break-all flex-1`}>

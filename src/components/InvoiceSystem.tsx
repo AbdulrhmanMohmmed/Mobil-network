@@ -70,7 +70,7 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
 <div>الخصم: ${inv.discount} ر.ي</div>
 <div class="total">الإجمالي: ${inv.total.toLocaleString()} ر.ي</div>
 <div>طريقة الدفع: ${inv.paymentMethod === "cash" ? "نقدي" : inv.paymentMethod === "transfer" ? "تحويل" : "آجل"}</div>
-<div class="footer">شكراً لتعاملكم معنا — Yemen Mobile Dev Tool v3.0</div></body></html>`;
+<div class="footer">شكراً لتعاملكم معنا — Yemen Mobile Dev Tool v4.0</div></body></html>`;
     const w = window.open("", "_blank");
     if (w) { w.document.write(printContent); w.document.close(); w.print(); }
   };
@@ -86,8 +86,8 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07] bg-[#0e1525]">
-        <FileText size={14} className="text-cyan-400" />
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06] bg-[#0d1117]">
+        <FileText size={14} className="text-blue-400" />
         <h2 className="text-sm font-bold text-white">الفوترة والإيصالات</h2>
         <span className="text-[10px] text-gray-500 font-mono">{invoices.length} فاتورة</span>
         <div className="flex items-center gap-2 text-[10px] mr-2">
@@ -95,26 +95,26 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
           <span className="text-yellow-400 font-mono">· معلق: {pendingAmount.toLocaleString()} ر.ي</span>
         </div>
         <div className="mr-auto" />
-        <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-cyan-900/40 border border-cyan-700/50 text-cyan-300 rounded-md text-xs font-semibold hover:bg-cyan-800/50 transition-all">
+        <button onClick={() => setShowForm(true)} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-lg text-xs font-semibold hover:bg-blue-600/20 transition-all">
           <Plus size={12} /> فاتورة جديدة
         </button>
       </div>
 
-      <div className="flex items-center gap-2 px-4 py-2 border-b border-white/[0.05] bg-[#0a1020]">
+      <div className="flex items-center gap-2 px-4 py-2 border-b border-white/[0.05] bg-[#0a0e1a]">
         {(["all", "paid", "unpaid"] as const).map(f => (
-          <button key={f} onClick={() => setShowFilter(f)} className={`px-2.5 py-1 rounded text-[10px] font-semibold transition-all ${showFilter === f ? "bg-cyan-800/40 text-cyan-300 border border-cyan-600/40" : "text-gray-500 hover:text-gray-300"}`}>
+          <button key={f} onClick={() => setShowFilter(f)} className={`px-2.5 py-1 rounded text-[10px] font-semibold transition-all ${showFilter === f ? "bg-cyan-800/40 text-blue-300 border border-blue-500/30" : "text-gray-500 hover:text-gray-300"}`}>
             {f === "all" ? "الكل" : f === "paid" ? "مدفوعة" : "معلقة"}
           </button>
         ))}
       </div>
 
       {showForm && (
-        <div className="px-4 py-3 border-b border-white/[0.07] bg-[#0c1428] space-y-2.5">
-          <div className="text-xs font-bold text-cyan-400 mb-2">فاتورة جديدة</div>
+        <div className="px-4 py-3 border-b border-white/[0.06] bg-[#0d1117] space-y-2.5">
+          <div className="text-xs font-bold text-blue-400 mb-2">فاتورة جديدة</div>
           <div className="grid grid-cols-3 gap-2">
-            <input placeholder="اسم العميل" value={form.customerName || ""} onChange={e => setForm({ ...form, customerName: e.target.value })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none focus:border-cyan-700/50" />
-            <input placeholder="رقم الهاتف" value={form.customerPhone || ""} onChange={e => setForm({ ...form, customerPhone: e.target.value })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none focus:border-cyan-700/50" />
-            <select value={form.paymentMethod || "cash"} onChange={e => setForm({ ...form, paymentMethod: e.target.value as Invoice["paymentMethod"] })} className="px-2 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white outline-none">
+            <input placeholder="اسم العميل" value={form.customerName || ""} onChange={e => setForm({ ...form, customerName: e.target.value })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none focus:border-blue-500/30" />
+            <input placeholder="رقم الهاتف" value={form.customerPhone || ""} onChange={e => setForm({ ...form, customerPhone: e.target.value })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none focus:border-blue-500/30" />
+            <select value={form.paymentMethod || "cash"} onChange={e => setForm({ ...form, paymentMethod: e.target.value as Invoice["paymentMethod"] })} className="px-2 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white outline-none">
               <option value="cash">نقدي</option>
               <option value="transfer">تحويل</option>
               <option value="credit">آجل</option>
@@ -124,7 +124,7 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
           {/* Items */}
           <div className="text-[10px] text-gray-500 font-bold">الأصناف:</div>
           {(form.items || []).map((item, i) => (
-            <div key={i} className="flex items-center gap-2 text-[10px] text-gray-300 bg-black/20 rounded px-2 py-1">
+            <div key={i} className="flex items-center gap-2 text-[10px] text-gray-300 bg-[#161b22] rounded px-2 py-1">
               <span className="flex-1">{item.name}</span>
               <span>{item.quantity} × {item.unitPrice}</span>
               <span className="text-green-400 font-mono">{item.total}</span>
@@ -132,16 +132,16 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
             </div>
           ))}
           <div className="grid grid-cols-4 gap-2">
-            <input placeholder="اسم الصنف" value={newItem.name || ""} onChange={e => setNewItem({ ...newItem, name: e.target.value })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none" />
-            <input type="number" placeholder="الكمية" value={newItem.quantity ?? ""} onChange={e => setNewItem({ ...newItem, quantity: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none" />
-            <input type="number" placeholder="السعر" value={newItem.unitPrice ?? ""} onChange={e => setNewItem({ ...newItem, unitPrice: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none" />
-            <button onClick={addItem} className="px-2 py-1.5 bg-green-900/30 border border-green-700/30 text-green-300 rounded text-xs font-semibold">+ إضافة</button>
+            <input placeholder="اسم الصنف" value={newItem.name || ""} onChange={e => setNewItem({ ...newItem, name: e.target.value })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none" />
+            <input type="number" placeholder="الكمية" value={newItem.quantity ?? ""} onChange={e => setNewItem({ ...newItem, quantity: Number(e.target.value) })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none" />
+            <input type="number" placeholder="السعر" value={newItem.unitPrice ?? ""} onChange={e => setNewItem({ ...newItem, unitPrice: Number(e.target.value) })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none" />
+            <button onClick={addItem} className="px-2 py-1.5 bg-green-900/30 border border-green-700/30 text-green-300 rounded-lg text-xs font-semibold">+ إضافة</button>
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            <input type="number" placeholder="أجرة العمل" value={form.laborCost ?? ""} onChange={e => setForm({ ...form, laborCost: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none" />
-            <input type="number" placeholder="الخصم" value={form.discount ?? ""} onChange={e => setForm({ ...form, discount: Number(e.target.value) })} className="px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none" />
-            <div className="flex items-center gap-2 px-2.5 py-1.5 bg-cyan-900/20 border border-cyan-700/20 rounded text-xs text-cyan-300 font-bold">
+            <input type="number" placeholder="أجرة العمل" value={form.laborCost ?? ""} onChange={e => setForm({ ...form, laborCost: Number(e.target.value) })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none" />
+            <input type="number" placeholder="الخصم" value={form.discount ?? ""} onChange={e => setForm({ ...form, discount: Number(e.target.value) })} className="px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none" />
+            <div className="flex items-center gap-2 px-2.5 py-1.5 bg-cyan-900/20 border border-cyan-700/20 rounded-lg text-xs text-blue-300 font-bold">
               الإجمالي: {calcTotal().toLocaleString()} ر.ي
             </div>
           </div>
@@ -151,11 +151,11 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
             تم الدفع
           </label>
 
-          <textarea placeholder="ملاحظات" value={form.notes || ""} onChange={e => setForm({ ...form, notes: e.target.value })} className="w-full px-2.5 py-1.5 bg-black/30 border border-white/[0.08] rounded text-xs text-white placeholder:text-gray-600 outline-none h-12 resize-none" />
+          <textarea placeholder="ملاحظات" value={form.notes || ""} onChange={e => setForm({ ...form, notes: e.target.value })} className="w-full px-2.5 py-1.5 bg-[#161b22] border border-white/[0.06] rounded-lg text-xs text-white placeholder:text-gray-600 outline-none h-12 resize-none" />
 
           <div className="flex gap-2 justify-end">
             <button onClick={resetForm} className="px-3 py-1.5 text-xs text-gray-400 hover:text-white">إلغاء</button>
-            <button onClick={handleSave} className="px-4 py-1.5 bg-cyan-800/50 border border-cyan-600/40 text-cyan-200 rounded text-xs font-semibold hover:bg-cyan-700/60 transition-all">
+            <button onClick={handleSave} className="px-4 py-1.5 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-lg text-xs font-semibold hover:bg-blue-600/30 transition-all">
               إنشاء الفاتورة
             </button>
           </div>
@@ -169,7 +169,7 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
           <div key={inv.id} className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04] hover:bg-white/[0.02] transition-all">
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-cyan-500">{inv.invoiceNumber}</span>
+                <span className="text-[10px] font-mono text-blue-400">{inv.invoiceNumber}</span>
                 <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${inv.paid ? "bg-green-500/20 text-green-300 border-green-500/30" : "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"}`}>
                   {inv.paid ? "مدفوعة" : "معلقة"}
                 </span>
@@ -180,7 +180,7 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
             </div>
             <div className="text-sm font-bold text-green-400">{inv.total.toLocaleString()} ر.ي</div>
             <div className="flex items-center gap-1">
-              <button onClick={() => handlePrint(inv)} className="p-1.5 text-gray-600 hover:text-cyan-400"><Printer size={12} /></button>
+              <button onClick={() => handlePrint(inv)} className="p-1.5 text-gray-600 hover:text-blue-400"><Printer size={12} /></button>
               <button onClick={() => handleDelete(inv.id)} className="p-1.5 text-gray-600 hover:text-red-400"><Trash2 size={12} /></button>
             </div>
           </div>
