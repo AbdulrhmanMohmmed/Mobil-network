@@ -13,13 +13,13 @@
 }
 
 :root {
-  --background: 222 20% 8%;
+  --background: 225 25% 6%;
   --foreground: 210 15% 90%;
-  --border: 220 15% 20%;
-  --primary: 214 80% 50%;
+  --border: 220 15% 13%;
+  --primary: 217 91% 60%;
   --primary-foreground: 0 0% 100%;
-  --app-font-sans: 'Segoe UI', 'Arial', sans-serif;
-  --app-font-mono: 'Consolas', 'Courier New', monospace;
+  --app-font-sans: 'Inter', 'Segoe UI', 'Arial', system-ui, sans-serif;
+  --app-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
 @layer base {
@@ -28,7 +28,11 @@
   body { @apply font-sans antialiased bg-background text-foreground overflow-hidden; }
 }
 
-::-webkit-scrollbar { width: 5px; height: 5px; }
+/* Smooth scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #4B5563; }
+::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #334155; }
+
+/* Selection color */
+::selection { background: rgba(59, 130, 246, 0.3); }

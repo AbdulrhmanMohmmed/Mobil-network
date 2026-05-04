@@ -94,8 +94,8 @@ export function IMEIChecker() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07] bg-[#0e1525]">
-        <Shield size={14} className="text-cyan-400" />
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06] bg-[#0d1117]">
+        <Shield size={14} className="text-blue-400" />
         <h2 className="text-sm font-bold text-white">فحص IMEI</h2>
         <span className="text-[10px] text-gray-500">التحقق من صحة IMEI وتحديد الجهاز</span>
       </div>
@@ -103,7 +103,7 @@ export function IMEIChecker() {
       <div className="p-4 space-y-4">
         {/* Input */}
         <div className="flex gap-2">
-          <div className="flex items-center gap-2 flex-1 bg-black/30 border border-white/[0.08] rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 flex-1 bg-[#161b22] border border-white/[0.06] rounded-lg px-3 py-2">
             <Search size={12} className="text-gray-500" />
             <input
               value={imei}
@@ -114,7 +114,7 @@ export function IMEIChecker() {
               className="w-full bg-transparent outline-none text-sm text-white placeholder:text-gray-600 font-mono tracking-wider"
             />
           </div>
-          <button onClick={handleCheck} className="px-5 py-2 bg-cyan-800/50 border border-cyan-600/40 text-cyan-200 rounded-lg text-xs font-bold hover:bg-cyan-700/60 transition-all">
+          <button onClick={handleCheck} className="px-5 py-2 bg-blue-600/20 border border-blue-500/30 text-blue-300 rounded-lg text-xs font-bold hover:bg-blue-600/30 transition-all">
             فحص
           </button>
         </div>
@@ -134,11 +134,11 @@ export function IMEIChecker() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-black/20 rounded-lg p-2.5 border border-white/[0.05]">
+              <div className="bg-[#161b22] rounded-lg p-2.5 border border-white/[0.05]">
                 <div className="text-[9px] text-gray-500 uppercase tracking-widest mb-1">IMEI</div>
                 <div className="text-xs text-white font-mono tracking-wider">{result.imei}</div>
               </div>
-              <div className="bg-black/20 rounded-lg p-2.5 border border-white/[0.05]">
+              <div className="bg-[#161b22] rounded-lg p-2.5 border border-white/[0.05]">
                 <div className="text-[9px] text-gray-500 uppercase tracking-widest mb-1">TAC</div>
                 <div className="text-xs text-white font-mono">{result.tac}</div>
               </div>
@@ -147,15 +147,15 @@ export function IMEIChecker() {
             {result.valid && (
               <>
                 {result.device && (
-                  <div className="bg-black/20 rounded-lg p-2.5 border border-white/[0.05]">
+                  <div className="bg-[#161b22] rounded-lg p-2.5 border border-white/[0.05]">
                     <div className="flex items-center gap-2 mb-1">
-                      <Smartphone size={11} className="text-cyan-400" />
+                      <Smartphone size={11} className="text-blue-400" />
                       <span className="text-[9px] text-gray-500 uppercase tracking-widest">الجهاز المكتشف</span>
                     </div>
                     <div className="text-sm text-white font-bold">{result.device.brand} {result.device.model}</div>
                   </div>
                 )}
-                <div className="bg-black/20 rounded-lg p-2.5 border border-white/[0.05]">
+                <div className="bg-[#161b22] rounded-lg p-2.5 border border-white/[0.05]">
                   <div className="flex items-center gap-2 mb-1">
                     <Info size={11} className="text-purple-400" />
                     <span className="text-[9px] text-gray-500 uppercase tracking-widest">جهة التسجيل</span>
@@ -168,7 +168,7 @@ export function IMEIChecker() {
         )}
 
         {/* ADB Commands */}
-        <div className="bg-black/20 border border-white/[0.05] rounded-lg p-3">
+        <div className="bg-[#161b22] border border-white/[0.05] rounded-lg p-3">
           <div className="text-[10px] font-bold text-gray-400 mb-2">أوامر ADB لقراءة IMEI:</div>
           <div className="space-y-1 font-mono text-[10px]">
             <div className="text-amber-300/70">adb shell service call iphonesubinfo 1</div>
@@ -183,7 +183,7 @@ export function IMEIChecker() {
             <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">سجل الفحص</div>
             <div className="space-y-1">
               {history.map((r, i) => (
-                <div key={i} className="flex items-center gap-2 px-2 py-1.5 bg-black/20 rounded text-[10px]">
+                <div key={i} className="flex items-center gap-2 px-2 py-1.5 bg-[#161b22] rounded text-[10px]">
                   {r.valid ? <CheckCircle size={9} className="text-green-400" /> : <AlertTriangle size={9} className="text-red-400" />}
                   <span className="text-gray-300 font-mono flex-1">{r.imei}</span>
                   {r.device && <span className="text-gray-500">{r.device.brand} {r.device.model}</span>}

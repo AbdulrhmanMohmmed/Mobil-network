@@ -4,7 +4,7 @@ import { getShopStats, getTickets, getInvoices, getInventory, getCustomers, Shop
 
 function StatCard({ icon: Icon, label, value, sub, color }: { icon: React.ElementType; label: string; value: string | number; sub?: string; color: string }) {
   return (
-    <div className="bg-black/30 border border-white/[0.06] rounded-lg p-3">
+    <div className="bg-[#161b22] border border-white/[0.06] rounded-lg p-3">
       <div className="flex items-center gap-2 mb-2">
         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${color}`}>
           <Icon size={13} />
@@ -65,15 +65,15 @@ export function ReportsPanel() {
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07] bg-[#0e1525]">
-        <BarChart3 size={14} className="text-cyan-400" />
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06] bg-[#0d1117]">
+        <BarChart3 size={14} className="text-blue-400" />
         <h2 className="text-sm font-bold text-white">التقارير والإحصائيات</h2>
       </div>
 
       <div className="p-4 space-y-4">
         {/* Stats Grid */}
         <div className="grid grid-cols-4 gap-3">
-          <StatCard icon={Wrench} label="تذاكر الصيانة" value={stats.totalTickets} sub={`${stats.activeTickets} نشطة · ${stats.completedToday} اليوم`} color="bg-cyan-900/50 text-cyan-400" />
+          <StatCard icon={Wrench} label="تذاكر الصيانة" value={stats.totalTickets} sub={`${stats.activeTickets} نشطة · ${stats.completedToday} اليوم`} color="bg-cyan-900/50 text-blue-400" />
           <StatCard icon={DollarSign} label="الإيرادات" value={`${stats.totalRevenue.toLocaleString()} ر.ي`} sub={`اليوم: ${stats.todayRevenue.toLocaleString()} ر.ي`} color="bg-green-900/50 text-green-400" />
           <StatCard icon={Users} label="العملاء" value={stats.totalCustomers} color="bg-blue-900/50 text-blue-400" />
           <StatCard icon={Package} label="المخزون" value={inventory.length} sub={stats.lowStockItems > 0 ? `${stats.lowStockItems} نفاد مخزون` : "مخزون كافي"} color="bg-purple-900/50 text-purple-400" />
@@ -82,9 +82,9 @@ export function ReportsPanel() {
         {/* Two Columns */}
         <div className="grid grid-cols-2 gap-4">
           {/* Ticket Status */}
-          <div className="bg-black/20 border border-white/[0.05] rounded-lg p-3">
+          <div className="bg-[#161b22] border border-white/[0.05] rounded-lg p-3">
             <div className="flex items-center gap-2 mb-3">
-              <Wrench size={11} className="text-cyan-400" />
+              <Wrench size={11} className="text-blue-400" />
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">حالة التذاكر</span>
             </div>
             <div className="space-y-2">
@@ -95,7 +95,7 @@ export function ReportsPanel() {
           </div>
 
           {/* Inventory by Category */}
-          <div className="bg-black/20 border border-white/[0.05] rounded-lg p-3">
+          <div className="bg-[#161b22] border border-white/[0.05] rounded-lg p-3">
             <div className="flex items-center gap-2 mb-3">
               <Package size={11} className="text-purple-400" />
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">المخزون حسب الفئة</span>
@@ -115,7 +115,7 @@ export function ReportsPanel() {
         {/* Two more columns */}
         <div className="grid grid-cols-2 gap-4">
           {/* Top Customers */}
-          <div className="bg-black/20 border border-white/[0.05] rounded-lg p-3">
+          <div className="bg-[#161b22] border border-white/[0.05] rounded-lg p-3">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp size={11} className="text-green-400" />
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">أفضل العملاء</span>
@@ -132,7 +132,7 @@ export function ReportsPanel() {
           </div>
 
           {/* Recent Invoices */}
-          <div className="bg-black/20 border border-white/[0.05] rounded-lg p-3">
+          <div className="bg-[#161b22] border border-white/[0.05] rounded-lg p-3">
             <div className="flex items-center gap-2 mb-3">
               <FileText size={11} className="text-yellow-400" />
               <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">آخر الفواتير</span>
@@ -141,7 +141,7 @@ export function ReportsPanel() {
               <div className="text-[10px] text-gray-600">لا توجد فواتير بعد</div>
             ) : recentInvoices.map(inv => (
               <div key={inv.id} className="flex items-center gap-2 py-1.5 border-b border-white/[0.03] last:border-0">
-                <span className="text-[9px] text-cyan-500 font-mono">{inv.invoiceNumber}</span>
+                <span className="text-[9px] text-blue-400 font-mono">{inv.invoiceNumber}</span>
                 <span className="text-[10px] text-gray-300 flex-1 truncate">{inv.customerName}</span>
                 <span className={`text-[9px] font-bold ${inv.paid ? "text-green-400" : "text-yellow-400"}`}>
                   {inv.total.toLocaleString()} ر.ي

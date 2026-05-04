@@ -12,8 +12,9 @@ import { InvoiceSystem } from "./components/InvoiceSystem";
 import { ReportsPanel } from "./components/ReportsPanel";
 import { IMEIChecker } from "./components/IMEIChecker";
 import {
-  Smartphone, Zap, Clock, ScanLine, Search, Star, Filter, History, Languages, Grid2x2, Menu,
-  Wrench, Package, Users, FileText, BarChart3, Shield, Settings,
+  Smartphone, Zap, Clock, ScanLine, Search, Star, History, Languages, ChevronLeft,
+  Wrench, Package, Users, FileText, BarChart3, Shield, Settings, Terminal, Wifi,
+  Cpu, HardDrive, Activity, ChevronDown,
 } from "lucide-react";
 
 let logId = 1;
@@ -30,31 +31,22 @@ const DEVICE_MODELS = [
 ];
 
 const BRAND_ICONS: Record<string, string> = {
-  general: "⚙️",
-  frp: "🛡️",
-  qualcomm: "🔴",
-  mtk: "🟠",
-  unisoc: "🟣",
-  samsung: "🔵",
-  xiaomi: "🟠",
-  huawei: "🔴",
-  oppo: "🟢",
-  tecno: "💙",
-  vivo: "🟣",
-  nokia: "📘",
+  general: "⚙️", frp: "🛡️", cdma: "📡", qualcomm: "🔴", mtk: "🟠",
+  unisoc: "🟣", samsung: "🔵", xiaomi: "🟠", huawei: "🔴", oppo: "🟢",
+  tecno: "💙", vivo: "🟣", nokia: "📘",
 };
 
 type Lang = "ar" | "en";
 type AppSection = "tools" | "tickets" | "inventory" | "customers" | "invoices" | "reports" | "imei" | "settings";
 
 const SECTIONS: { id: AppSection; icon: React.ElementType; ar: string; en: string }[] = [
-  { id: "tools", icon: Wrench, ar: "أدوات الصيانة", en: "Repair Tools" },
+  { id: "tools", icon: Wrench, ar: "أدوات الصيانة", en: "Tools" },
   { id: "tickets", icon: FileText, ar: "تذاكر الصيانة", en: "Tickets" },
   { id: "inventory", icon: Package, ar: "المخزون", en: "Inventory" },
   { id: "customers", icon: Users, ar: "العملاء", en: "Customers" },
   { id: "invoices", icon: FileText, ar: "الفوترة", en: "Invoices" },
   { id: "reports", icon: BarChart3, ar: "التقارير", en: "Reports" },
-  { id: "imei", icon: Shield, ar: "فحص IMEI", en: "IMEI Check" },
+  { id: "imei", icon: Shield, ar: "فحص IMEI", en: "IMEI" },
   { id: "settings", icon: Settings, ar: "الإعدادات", en: "Settings" },
 ];
 
@@ -63,9 +55,9 @@ export default function App() {
   const [activeBrandId, setActiveBrandId] = useState("general");
   const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const [lang, setLang] = useState<Lang>("ar");
-  const [compactView, setCompactView] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [logs, setLogs] = useState<LogEntry[]>([
-    { id: logId++, time: now(), type: "system", text: "Yemen Mobile Dev Tool v3.0 — تهيئة النظام..." },
+    { id: logId++, time: now(), type: "system", text: "Yemen Mobile Dev Tool v4.0 — تهيئة النظام..." },
     { id: logId++, time: now(), type: "system", text: "اضغط 'اتصال ADB' لتوصيل جهازك عبر USB، أو اختر عملية لتنفيذها مباشرةً" },
     { id: logId++, time: now(), type: "info", text: "يمن موبايل 421/02 · سبأفون 421/01 · يونيتل 421/04 · هيتس 421/03" },
   ]);
@@ -216,44 +208,29 @@ export default function App() {
     }),
   })).filter((group) => group.operations.length > 0);
 
-  const text = {
-    ar: {
-      subtitle: "واجهة مبسطة للتشخيص والإصلاح",
-      search: "ابحث عن عملية، ماركة، أو وصف...",
-      favorites: "المفضلة",
-      clear: "تصفير الفلتر",
-      quickScan: "⚡ فحص سريع",
-      details: "تفاصيل مختصرة",
-      simple: "عرض مبسط",
-      full: "عرض كامل",
-      lang: "العربية",
-      brands: "ماركة",
-      operations: "عملية",
-      scans: "فحص مباشر",
-      recent: "حديثاً",
-      noDevice: "لا يوجد اتصال — قم بتوصيل الجهاز عبر USB",
-      connected: "متصل",
-      disconnected: "غير متصل",
-    },
-    en: {
-      subtitle: "Simplified repair workspace",
-      search: "Search operation, brand, or description...",
-      favorites: "Favorites",
-      clear: "Clear filters",
-      quickScan: "⚡ Quick scan",
-      details: "Quick details",
-      simple: "Simple view",
-      full: "Full view",
-      lang: "English",
-      brands: "brands",
-      operations: "operations",
-      scans: "direct scans",
-      recent: "recent",
-      noDevice: "No device connected — plug in USB",
-      connected: "Connected",
-      disconnected: "Disconnected",
-    },
-  }[lang];
+  const t = lang === "ar" ? {
+    subtitle: "أداة شاملة للتشخيص والإصلاح",
+    search: "ابحث عن عملية...",
+    favorites: "المفضلة",
+    quickScan: "فحص سريع",
+    details: "التفاصيل",
+    lang: "EN",
+    brands: "ماركة",
+    operations: "عملية",
+    scans: "فحص",
+    noDevice: "لا يوجد اتصال — وصّل الجهاز عبر USB",
+  } : {
+    subtitle: "All-in-one repair workspace",
+    search: "Search operations...",
+    favorites: "Favorites",
+    quickScan: "Quick Scan",
+    details: "Details",
+    lang: "عر",
+    brands: "brands",
+    operations: "ops",
+    scans: "scans",
+    noDevice: "No device — connect via USB",
+  };
 
   const renderSection = () => {
     switch (activeSection) {
@@ -269,159 +246,166 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-[#0b1120] text-white overflow-hidden select-none" dir="rtl">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-[#0e1525] border-b border-white/10 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-red-500/90" />
-            <span className="w-3 h-3 rounded-full bg-yellow-500/90" />
-            <span className="w-3 h-3 rounded-full bg-green-500/90" />
-          </div>
-          <div className="flex items-center gap-2.5 mr-1">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-700 flex items-center justify-center shadow-lg shadow-blue-900/50">
-              <Smartphone size={15} strokeWidth={2.5} />
-            </div>
-            <div className="leading-tight">
-              <div className="text-sm font-bold text-white">Yemen Mobile Dev Tool</div>
-              <div className="text-[10px] text-cyan-400/70 font-mono tracking-wide">{text.subtitle} · {BRANDS.length} {text.brands} · {totalOperations}+ {text.operations}</div>
-            </div>
-          </div>
+    <div className="flex h-screen bg-[#0a0e1a] text-gray-200 overflow-hidden select-none" dir="rtl">
+      {/* ─── Left Navigation Rail ─── */}
+      <nav className="w-16 shrink-0 bg-[#0d1117] flex flex-col items-center py-3 gap-1 border-l border-white/[0.06]">
+        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
+          <Smartphone size={18} className="text-white" />
         </div>
-        {/* Section Tabs */}
-        <div className="flex items-center gap-0.5 bg-black/30 border border-white/[0.06] rounded-lg p-0.5">
-          {SECTIONS.map(s => (
-            <button key={s.id} onClick={() => setActiveSection(s.id)} className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[10px] font-semibold transition-all ${activeSection === s.id ? "bg-cyan-800/40 text-cyan-300 border border-cyan-600/30" : "text-gray-500 hover:text-gray-300 hover:bg-white/[0.03] border border-transparent"}`}>
-              <s.icon size={11} />
-              {lang === "ar" ? s.ar : s.en}
+        {SECTIONS.map(s => {
+          const active = activeSection === s.id;
+          return (
+            <button
+              key={s.id}
+              onClick={() => setActiveSection(s.id)}
+              className={`w-12 h-11 rounded-xl flex flex-col items-center justify-center gap-0.5 transition-all duration-200 ${
+                active
+                  ? "bg-blue-500/15 text-blue-400 shadow-sm"
+                  : "text-gray-600 hover:text-gray-300 hover:bg-white/[0.04]"
+              }`}
+              title={lang === "ar" ? s.ar : s.en}
+            >
+              <s.icon size={16} strokeWidth={active ? 2.2 : 1.8} />
+              <span className="text-[8px] font-medium leading-none">{lang === "ar" ? s.ar.split(" ")[0] : s.en.split(" ")[0]}</span>
             </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => setLang((v) => (v === "ar" ? "en" : "ar"))} className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-300">
-            <Languages size={11} />
-            {text.lang}
+          );
+        })}
+        <div className="mt-auto flex flex-col items-center gap-2">
+          <button onClick={() => setLang((v) => (v === "ar" ? "en" : "ar"))} className="w-9 h-9 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center text-gray-500 hover:text-gray-300 transition-all">
+            <Languages size={14} />
           </button>
-          <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-mono font-semibold">v3.0</span>
+          <div className="text-[8px] font-mono text-gray-700">v4.0</div>
         </div>
-      </div>
+      </nav>
 
-      <DeviceInfoBar connected={connected} connecting={connecting} deviceModel={deviceModel} androidVersion={androidVersion} serialNo={serialNo} onConnect={handleConnect} onDisconnect={handleDisconnect} />
-
-      {/* Main content */}
-      {activeSection === "tools" ? (
-        <>
-          {/* Tools toolbar */}
-          <div className="flex items-center gap-2 px-4 py-1.5 bg-[#080e1c] border-b border-white/[0.05] shrink-0">
-            <button onClick={handleQuickScan} disabled={scanning} className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-cyan-900/30 border border-cyan-700/40 text-cyan-300 hover:bg-cyan-800/40 transition-all text-[10px] font-semibold disabled:opacity-40">
-              <ScanLine size={11} />
-              {scanning ? "جاري الفحص..." : text.quickScan}
-            </button>
-            {scanResult && !scanning && (
-              <button onClick={() => setShowScan(!showScan)} className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-green-900/30 border border-green-700/40 text-green-300 hover:bg-green-800/40 transition-all text-[10px] font-semibold">
-                ✓ عرض نتائج الفحص — {scanResult.brand} {scanResult.model}
-              </button>
-            )}
-            <button onClick={() => setCompactView((v) => !v)} className="flex items-center gap-1 px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-300">
-              {compactView ? <Grid2x2 size={11} /> : <Menu size={11} />}
-              {compactView ? text.full : text.simple}
-            </button>
-            <div className="mr-auto flex items-center gap-2 text-[9px] text-gray-700 font-mono">
-              <span>{BRANDS.length} {text.brands}</span>
-              <span>·</span>
-              <span>{totalOperations} {text.operations}</span>
-              <span>·</span>
-              <span>{scanCount} {text.scans}</span>
-              <span>·</span>
-              <span>{favoriteCount} {text.favorites}</span>
-            </div>
-          </div>
-
-          <div className="px-4 py-2 border-b border-white/[0.05] bg-[#09101e] flex items-center gap-2 shrink-0">
-            <div className="flex items-center gap-2 flex-1 min-w-0 bg-black/30 border border-white/[0.06] rounded-lg px-3 py-2">
-              <Search size={12} className="text-gray-500 shrink-0" />
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={text.search} className="w-full bg-transparent outline-none text-xs text-white placeholder:text-gray-600" />
-            </div>
-            <button onClick={() => setShowOnlyFavs((v) => !v)} className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-[10px] font-semibold transition-all ${showOnlyFavs ? "bg-yellow-900/25 border-yellow-700/40 text-yellow-300" : "bg-black/25 border-white/10 text-gray-400 hover:text-white"}`}>
-              <Star size={11} />
-              {text.favorites}
-            </button>
-            <button onClick={() => { setQuery(""); setShowOnlyFavs(false); }} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-black/25 border border-white/10 text-gray-400 hover:text-white text-[10px] font-semibold">
-              <Filter size={11} />
-              {text.clear}
-            </button>
-          </div>
-
-          {/* Tools main area */}
-          <div className="flex flex-1 min-h-0">
-            {/* Brand sidebar */}
-            <aside className={`${compactView ? "w-20" : "w-52"} shrink-0 bg-[#0e1525] border-l border-white/[0.07] flex flex-col overflow-y-auto`}>
-              <div className="px-3 pt-2.5 pb-2 text-[9px] font-bold text-gray-600 uppercase tracking-widest flex items-center gap-2 border-b border-white/[0.05]">
-                <span className="flex-1 h-px bg-gray-800" />
-                {compactView ? "" : "الماركات"}
-                <span className="flex-1 h-px bg-gray-800" />
+      {/* ─── Main Content Area ─── */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* ─── Top Header ─── */}
+        <header className="h-12 shrink-0 bg-[#0d1117] border-b border-white/[0.06] flex items-center justify-between px-4">
+          <div className="flex items-center gap-3">
+            <h1 className="text-sm font-bold text-white">
+              {lang === "ar" ? SECTIONS.find(s => s.id === activeSection)!.ar : SECTIONS.find(s => s.id === activeSection)!.en}
+            </h1>
+            {activeSection === "tools" && (
+              <div className="flex items-center gap-2 text-[10px] text-gray-600 font-mono">
+                <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-semibold">{BRANDS.length} {t.brands}</span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold">{totalOperations}+ {t.operations}</span>
+                <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 font-semibold">{scanCount} {t.scans}</span>
               </div>
-              {BRANDS.map((brand) => {
-                const active = activeBrandId === brand.id;
-                const opCount = brand.groups.reduce((a, g) => a + g.operations.length, 0);
-                return (
-                  <button key={brand.id} onClick={() => { setActiveBrandId(brand.id); setActiveGroupId(null); setSelectedOp(null); setShowScan(false); }} className={`w-full text-right px-3 py-3 text-xs font-medium border-b border-white/[0.03] transition-all duration-150 flex items-center gap-2 ${active ? "text-white bg-white/[0.06]" : "text-gray-500 hover:bg-white/[0.03] hover:text-gray-300"}`} style={active ? { boxShadow: `inset -3px 0 0 ${brand.color}` } : undefined}>
-                    <span className="w-2 h-2 rounded-full shrink-0 transition-all" style={{ backgroundColor: active ? brand.color : "#374151", boxShadow: active ? `0 0 6px ${brand.color}80` : "none" }} />
-                    <span className="text-sm leading-none">{BRAND_ICONS[brand.id] ?? "📱"}</span>
-                    {!compactView && (
-                      <div className="flex-1 text-right leading-tight min-w-0">
-                        <div className="font-semibold truncate">{brand.nameAr}</div>
-                        <div className="text-[9px] opacity-40 mt-0.5 truncate">{brand.chipset}</div>
-                      </div>
-                    )}
-                    <span className="text-[9px] text-gray-700 shrink-0">{opCount}</span>
+            )}
+          </div>
+          <DeviceInfoBar connected={connected} connecting={connecting} deviceModel={deviceModel} androidVersion={androidVersion} serialNo={serialNo} onConnect={handleConnect} onDisconnect={handleDisconnect} />
+        </header>
+
+        {activeSection === "tools" ? (
+          <div className="flex-1 flex min-h-0">
+            {/* ─── Brand Sidebar ─── */}
+            <aside className={`${sidebarOpen ? "w-56" : "w-0 overflow-hidden"} shrink-0 bg-[#0d1117]/80 border-l border-white/[0.05] flex flex-col transition-all duration-300`}>
+              {/* Search + Controls */}
+              <div className="p-3 space-y-2 border-b border-white/[0.05]">
+                <div className="flex items-center gap-1.5 bg-[#161b22] rounded-lg px-2.5 py-2 border border-white/[0.06] focus-within:border-blue-500/30 transition-colors">
+                  <Search size={13} className="text-gray-600 shrink-0" />
+                  <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t.search} className="w-full bg-transparent outline-none text-xs text-gray-200 placeholder:text-gray-600" />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button onClick={handleQuickScan} disabled={scanning} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 text-[10px] font-semibold transition-all disabled:opacity-40">
+                    <ScanLine size={11} />
+                    {scanning ? "..." : t.quickScan}
                   </button>
-                );
-              })}
-              <div className="mt-auto px-3 py-3 border-t border-white/[0.05] text-[9px] text-gray-700 font-mono space-y-0.5">
-                <div className="font-bold text-gray-600 mb-1">شبكات اليمن</div>
-                <div>يمن موبايل 421/02</div>
-                <div>سبأفون 421/01</div>
-                <div>يونيتل (YOU) 421/04</div>
-                <div>هيتس 421/03</div>
+                  <button onClick={() => setShowOnlyFavs((v) => !v)} className={`flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg border text-[10px] font-semibold transition-all ${showOnlyFavs ? "bg-amber-500/15 border-amber-500/30 text-amber-400" : "bg-white/[0.03] border-white/[0.06] text-gray-500 hover:text-gray-300"}`}>
+                    <Star size={10} fill={showOnlyFavs ? "currentColor" : "none"} />
+                    {favoriteCount}
+                  </button>
+                </div>
+              </div>
+              {/* Brand List */}
+              <div className="flex-1 overflow-y-auto py-1">
+                {BRANDS.map((brand) => {
+                  const active = activeBrandId === brand.id;
+                  const opCount = brand.groups.reduce((a, g) => a + g.operations.length, 0);
+                  return (
+                    <button
+                      key={brand.id}
+                      onClick={() => { setActiveBrandId(brand.id); setActiveGroupId(null); setSelectedOp(null); setShowScan(false); }}
+                      className={`w-full text-right px-3 py-2.5 flex items-center gap-2.5 transition-all duration-150 ${
+                        active
+                          ? "bg-white/[0.06] text-white"
+                          : "text-gray-500 hover:bg-white/[0.03] hover:text-gray-300"
+                      }`}
+                    >
+                      <span className="w-2 h-2 rounded-full shrink-0 transition-all" style={{ backgroundColor: active ? brand.color : "transparent", boxShadow: active ? `0 0 8px ${brand.color}60` : "none" }} />
+                      <span className="text-base leading-none">{BRAND_ICONS[brand.id] ?? "📱"}</span>
+                      <div className="flex-1 text-right leading-tight min-w-0">
+                        <div className="text-[11px] font-semibold truncate">{brand.nameAr}</div>
+                        <div className="text-[9px] opacity-40 truncate">{brand.chipset}</div>
+                      </div>
+                      <span className="text-[9px] font-mono text-gray-700 tabular-nums">{opCount}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* Yemen Networks Footer */}
+              <div className="px-3 py-2.5 border-t border-white/[0.05] space-y-1">
+                <div className="text-[9px] font-bold text-gray-600 mb-1 flex items-center gap-1.5">
+                  <Wifi size={9} />
+                  شبكات اليمن
+                </div>
+                {[
+                  { name: "يمن موبايل", code: "421/02" },
+                  { name: "سبأفون", code: "421/01" },
+                  { name: "يونيتل (YOU)", code: "421/04" },
+                  { name: "هيتس", code: "421/03" },
+                ].map(n => (
+                  <div key={n.code} className="flex items-center justify-between text-[8px]">
+                    <span className="text-gray-500">{n.name}</span>
+                    <span className="font-mono text-gray-700">{n.code}</span>
+                  </div>
+                ))}
               </div>
             </aside>
 
-            {/* Operations area */}
-            <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-              <div className="flex items-center bg-[#0e1525] border-b border-white/[0.07] overflow-x-auto shrink-0 gap-0">
-                <div className="px-3 py-2.5 text-[10px] font-bold border-l border-white/[0.07] shrink-0 flex items-center gap-1.5">
-                  <span className="text-sm">{BRAND_ICONS[activeBrandId] ?? "📱"}</span>
-                  <span className="text-gray-400">{activeBrand.nameAr}</span>
-                </div>
-                <button onClick={() => setActiveGroupId(null)} className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${activeGroupId === null ? "border-cyan-400 text-cyan-300 bg-white/[0.04]" : "border-transparent text-gray-600 hover:text-gray-300 hover:bg-white/[0.02]"}`}>
-                  الكل
+            {/* ─── Operations Content ─── */}
+            <div className="flex-1 flex flex-col min-w-0">
+              {/* Group Tabs Bar */}
+              <div className="flex items-center bg-[#0d1117]/60 border-b border-white/[0.05] shrink-0 px-1 gap-0">
+                <button onClick={() => setSidebarOpen(v => !v)} className="p-2 rounded-lg hover:bg-white/[0.05] text-gray-500 transition-all ml-1">
+                  <ChevronLeft size={14} className={`transition-transform duration-200 ${sidebarOpen ? "" : "rotate-180"}`} />
                 </button>
-                {activeBrand.groups.map((group) => (
-                  <button key={group.id} onClick={() => setActiveGroupId(group.id)} className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all ${activeGroupId === group.id ? "border-cyan-400 text-cyan-300 bg-white/[0.04]" : "border-transparent text-gray-600 hover:text-gray-300 hover:bg-white/[0.02]"}`}>
-                    {group.titleAr}
+                <div className="flex items-center gap-1 px-1 text-[11px] font-bold text-gray-300 shrink-0 border-l border-white/[0.05] mr-2 pr-2">
+                  <span>{BRAND_ICONS[activeBrandId] ?? "📱"}</span>
+                  <span>{activeBrand.nameAr}</span>
+                </div>
+                <div className="flex items-center gap-0.5 overflow-x-auto flex-1">
+                  <button onClick={() => setActiveGroupId(null)} className={`px-3 py-2 text-[10px] font-semibold whitespace-nowrap rounded-lg transition-all ${activeGroupId === null ? "bg-blue-500/15 text-blue-400" : "text-gray-600 hover:text-gray-300 hover:bg-white/[0.04]"}`}>
+                    الكل
                   </button>
-                ))}
+                  {activeBrand.groups.map((group) => (
+                    <button key={group.id} onClick={() => setActiveGroupId(group.id)} className={`px-3 py-2 text-[10px] font-semibold whitespace-nowrap rounded-lg transition-all ${activeGroupId === group.id ? "bg-blue-500/15 text-blue-400" : "text-gray-600 hover:text-gray-300 hover:bg-white/[0.04]"}`}>
+                      {group.titleAr}
+                    </button>
+                  ))}
+                </div>
                 {runningOpId && (
-                  <div className="mr-auto px-3 flex items-center gap-1.5 text-[10px] text-amber-300 font-mono shrink-0">
+                  <div className="mr-auto px-3 flex items-center gap-1.5 text-[10px] text-amber-400 font-mono shrink-0">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
                     جاري التنفيذ...
                   </div>
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-5">
+              {/* Operations Grid */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {visibleGroups.length === 0 ? (
                   <div className="flex h-full items-center justify-center text-center text-gray-600 text-sm">لا توجد نتائج مطابقة</div>
                 ) : visibleGroups.map((group) => (
                   <div key={group.id}>
-                    <div className="flex items-center gap-2 mb-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400/60 shrink-0" />
-                      <span className="text-[10px] font-bold text-gray-600 uppercase tracking-widest">{group.titleAr}</span>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="w-1 h-4 rounded-full bg-blue-500/40 shrink-0" />
+                      <span className="text-[11px] font-bold text-gray-400">{group.titleAr}</span>
                       <span className="flex-1 h-px bg-white/[0.03]" />
-                      <span className="text-[9px] text-gray-700">{group.operations.length}</span>
+                      <span className="text-[9px] text-gray-700 font-mono">{group.operations.length}</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 xl:grid-cols-3 gap-2">
                       {group.operations.map((op) => (
                         <OperationButton key={op.id} operation={op} onClick={handleOperation} active={selectedOp?.id === op.id} running={runningOpId === op.id} favorite={favorites.includes(op.id)} onToggleFavorite={() => toggleFavorite(op.id)} />
                       ))}
@@ -431,56 +415,68 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right panel: Details / Scan */}
-            <aside className="w-72 shrink-0 bg-[#0e1525] border-r border-white/[0.07] flex flex-col overflow-hidden">
+            {/* ─── Right Detail Panel ─── */}
+            <aside className="w-80 shrink-0 bg-[#0d1117]/80 border-r border-white/[0.05] flex flex-col overflow-hidden">
               {showScan ? (
                 <ScanPanel result={scanResult} scanning={scanning} onClose={() => setShowScan(false)} />
               ) : (
                 <>
-                  <div className="px-3 py-2.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest flex items-center gap-2 border-b border-white/[0.05] shrink-0">
-                    <Zap size={10} className="text-cyan-400" />
-                    {text.details}
+                  <div className="px-4 py-3 flex items-center gap-2 border-b border-white/[0.05] shrink-0">
+                    <Zap size={12} className="text-blue-400" />
+                    <span className="text-xs font-bold text-gray-300">{t.details}</span>
                   </div>
                   {selectedOp ? (
-                    <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                      <div className="bg-white/[0.03] rounded-lg p-3 border border-white/[0.05]">
-                        <div className="text-sm font-bold text-white leading-tight">{selectedOp.labelAr}</div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                      {/* Op Info Card */}
+                      <div className="bg-[#161b22] rounded-xl p-4 border border-white/[0.06]">
+                        <div className="text-sm font-bold text-white leading-snug">{selectedOp.labelAr}</div>
                         <div className="text-[10px] text-gray-500 font-mono mt-1">{selectedOp.label}</div>
-                        <div className="text-[11px] text-gray-400 mt-2 leading-relaxed">{selectedOp.description}</div>
+                        <p className="text-[11px] text-gray-400 mt-3 leading-relaxed">{selectedOp.description}</p>
+                        <div className="flex items-center gap-3 mt-3 text-[10px] text-gray-600">
+                          <span className="flex items-center gap-1"><Terminal size={10} />{selectedOp.commands.length} أمر</span>
+                          {selectedOp.requiresRoot && <span className="text-red-400">يتطلب Root</span>}
+                          {selectedOp.isScan && <span className="text-purple-400">فحص مباشر</span>}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 text-[10px] text-gray-600">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                        <span>{selectedOp.commands.length} أمر للتنفيذ</span>
-                      </div>
+                      {/* Commands */}
                       <div className="space-y-2">
                         {selectedOp.commands.map((cmd, i) => (
-                          <div key={`${selectedOp.id}-${i}`} className="bg-black/40 rounded-lg overflow-hidden border border-white/[0.06]">
-                            <div className="flex items-center justify-between px-2 py-1 bg-white/[0.03] border-b border-white/[0.05]">
-                              <span className="text-[9px] text-gray-700 font-mono">#{i + 1}</span>
+                          <div key={`${selectedOp.id}-${i}`} className="bg-[#161b22] rounded-lg overflow-hidden border border-white/[0.06]">
+                            <div className="flex items-center justify-between px-3 py-1.5 bg-white/[0.02] border-b border-white/[0.04]">
+                              <span className="text-[9px] text-gray-600 font-mono">#{i + 1}</span>
                               <CopyButton text={cmd} label="نسخ" />
                             </div>
-                            <div className="px-2.5 py-2">
-                              <span className="font-mono text-[10px] text-amber-300/90 whitespace-pre-wrap break-all leading-relaxed select-text">{cmd}</span>
+                            <div className="px-3 py-2">
+                              <code className="font-mono text-[10px] text-amber-300/80 whitespace-pre-wrap break-all leading-relaxed select-text">{cmd}</code>
                             </div>
                           </div>
                         ))}
                       </div>
-                      <button onClick={() => handleOperation(selectedOp)} disabled={!!runningOpId} className="w-full py-2.5 bg-gradient-to-r from-cyan-800/60 to-blue-800/60 hover:from-cyan-700/70 hover:to-blue-700/70 border border-cyan-700/40 text-cyan-200 text-xs font-bold rounded-lg transition-all disabled:opacity-40">
-                        {runningOpId === selectedOp.id ? "⏳ جاري التنفيذ..." : "▶ تنفيذ مجدداً"}
+                      {/* Action Buttons */}
+                      <button onClick={() => handleOperation(selectedOp)} disabled={!!runningOpId} className="w-full py-3 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 text-xs font-bold rounded-xl transition-all disabled:opacity-40 flex items-center justify-center gap-2">
+                        {runningOpId === selectedOp.id ? (
+                          <><span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" /> جاري التنفيذ...</>
+                        ) : (
+                          <><Zap size={12} /> تنفيذ</>
+                        )}
                       </button>
-                      <button onClick={() => toggleFavorite(selectedOp.id)} className="w-full py-2.5 bg-white/[0.03] hover:bg-white/[0.05] border border-white/[0.06] text-xs font-bold rounded-lg transition-all text-yellow-300">
+                      <button onClick={() => toggleFavorite(selectedOp.id)} className={`w-full py-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-2 ${favorites.includes(selectedOp.id) ? "bg-amber-500/15 border-amber-500/25 text-amber-400" : "bg-white/[0.03] border-white/[0.06] text-gray-500 hover:text-amber-400"}`}>
+                        <Star size={12} fill={favorites.includes(selectedOp.id) ? "currentColor" : "none"} />
                         {favorites.includes(selectedOp.id) ? "★ إزالة من المفضلة" : "☆ إضافة إلى المفضلة"}
                       </button>
                     </div>
                   ) : (
-                    <div className="flex-1 flex flex-col items-center justify-center text-center p-6 gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center">
-                        <Zap size={22} className="text-gray-700" />
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-6 gap-5">
+                      <div className="w-16 h-16 rounded-2xl bg-[#161b22] border border-white/[0.06] flex items-center justify-center">
+                        <Zap size={24} className="text-gray-700" />
                       </div>
-                      <div className="text-gray-700 text-xs leading-relaxed">اضغط على أي عملية<br />لعرض تفاصيلها وأوامرها</div>
-                      <button onClick={handleQuickScan} className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-cyan-900/30 border border-cyan-700/30 text-cyan-400 text-[10px] font-semibold hover:bg-cyan-800/40 transition-all">
-                        <ScanLine size={11} />
-                        {text.quickScan}
+                      <div className="space-y-1">
+                        <div className="text-gray-600 text-xs">اضغط على أي عملية</div>
+                        <div className="text-gray-700 text-[10px]">لعرض التفاصيل والأوامر</div>
+                      </div>
+                      <button onClick={handleQuickScan} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-semibold hover:bg-blue-500/20 transition-all">
+                        <ScanLine size={12} />
+                        {t.quickScan}
                       </button>
                     </div>
                   )}
@@ -488,33 +484,30 @@ export default function App() {
               )}
             </aside>
           </div>
-        </>
-      ) : (
-        /* Other sections */
-        <div className="flex-1 min-h-0 overflow-hidden">
-          {renderSection()}
-        </div>
-      )}
+        ) : (
+          <div className="flex-1 min-h-0 overflow-hidden">
+            {renderSection()}
+          </div>
+        )}
 
-      <ConsolePanel logs={logs} onClear={() => setLogs([])} />
+        {/* ─── Console ─── */}
+        <ConsolePanel logs={logs} onClear={() => setLogs([])} />
 
-      <div className="flex items-center justify-between px-4 py-1 bg-[#060a12] border-t border-white/[0.04] text-[9px] text-gray-700 font-mono shrink-0">
-        <div className="flex items-center gap-3">
-          <span className={connected ? "text-green-500" : "text-gray-700"}>
-            ● {connected ? `متصل — ${deviceModel} · Android ${androidVersion}` : text.noDevice}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          {scanResult && <span className="text-cyan-600">آخر فحص: {scanResult.brand} {scanResult.model}</span>}
-          <span className="flex items-center gap-1"><Clock size={9} />عمليات: {opsRun}</span>
-          <span className="flex items-center gap-1"><History size={9} />حديثاً: {lastOps.length}</span>
-          <span>|</span>
-          <span>{BRANDS.length} {text.brands}</span>
-          <span>|</span>
-          <span>ADB v1.0.41</span>
-          <span>|</span>
-          <span>Yemen Mobile Dev Tool v3.0</span>
-        </div>
+        {/* ─── Status Bar ─── */}
+        <footer className="h-7 shrink-0 flex items-center justify-between px-4 bg-[#0d1117] border-t border-white/[0.05] text-[9px] font-mono text-gray-600">
+          <div className="flex items-center gap-2">
+            <span className={`flex items-center gap-1 ${connected ? "text-emerald-500" : "text-gray-700"}`}>
+              <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-emerald-500" : "bg-gray-700"}`} />
+              {connected ? `${deviceModel}` : t.noDevice}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            {scanResult && <span className="text-blue-500">{scanResult.brand} {scanResult.model}</span>}
+            <span className="flex items-center gap-1"><Activity size={8} />{opsRun}</span>
+            <span className="flex items-center gap-1"><History size={8} />{lastOps.length}</span>
+            <span className="text-gray-700">Yemen Mobile Dev Tool v4.0</span>
+          </div>
+        </footer>
       </div>
     </div>
   );
@@ -524,69 +517,109 @@ export default function App() {
 
 function SettingsPanel({ lang }: { lang: Lang }) {
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07] bg-[#0e1525]">
-        <Settings size={14} className="text-cyan-400" />
-        <h2 className="text-sm font-bold text-white">{lang === "ar" ? "الإعدادات" : "Settings"}</h2>
-      </div>
-      <div className="p-4 space-y-4 max-w-2xl">
-        <div className="bg-black/20 border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-xs font-bold text-white mb-3">معلومات النظام</h3>
-          <div className="space-y-2 text-[11px]">
-            <div className="flex justify-between"><span className="text-gray-400">الإصدار</span><span className="text-white font-mono">v3.0</span></div>
-            <div className="flex justify-between"><span className="text-gray-400">الماركات المدعومة</span><span className="text-white font-mono">{BRANDS.length}</span></div>
-            <div className="flex justify-between"><span className="text-gray-400">إجمالي العمليات</span><span className="text-white font-mono">{BRANDS.flatMap(b => b.groups.flatMap(g => g.operations)).length}+</span></div>
-            <div className="flex justify-between"><span className="text-gray-400">التقنية</span><span className="text-white font-mono">React 19 + Vite 6 + TypeScript</span></div>
-          </div>
+    <div className="flex flex-col h-full overflow-y-auto bg-[#0a0e1a]">
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.06]">
+        <div className="w-8 h-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
+          <Settings size={16} className="text-blue-400" />
         </div>
-
-        <div className="bg-black/20 border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-xs font-bold text-white mb-3">الميزات الرئيسية</h3>
-          <div className="grid grid-cols-2 gap-2">
+        <h2 className="text-base font-bold text-white">{lang === "ar" ? "الإعدادات" : "Settings"}</h2>
+      </div>
+      <div className="p-5 space-y-4 max-w-3xl">
+        {/* System Info */}
+        <div className="bg-[#161b22] rounded-xl p-5 border border-white/[0.06]">
+          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <Cpu size={14} className="text-blue-400" />
+            معلومات النظام
+          </h3>
+          <div className="grid grid-cols-2 gap-3 text-[11px]">
             {[
-              "أدوات الصيانة والبرمجة (ADB/Fastboot)",
-              "تعريب الهواتف (CSC + Locale)",
-              "تشخيص متقدم (بطارية، شاشة، حساسات)",
-              "نسخ احتياطي واستعادة",
-              "FRP Bypass لجميع الماركات",
-              "نظام تذاكر الصيانة",
-              "إدارة المخزون",
-              "إدارة العملاء CRM",
-              "الفوترة والإيصالات",
-              "فحص IMEI",
-              "التحكم عن بعد (scrcpy)",
-              "تقارير وإحصائيات",
-              "دعم Unisoc/SPD",
-              "12 ماركة مدعومة",
-              "واجهة عربية RTL",
-              "PWA جاهز للتثبيت",
-            ].map((f, i) => (
-              <div key={i} className="flex items-center gap-1.5 text-[10px] text-gray-300">
-                <span className="w-1 h-1 rounded-full bg-cyan-400 shrink-0" /> {f}
+              ["الإصدار", "v4.0"],
+              ["الماركات", `${BRANDS.length}`],
+              ["العمليات", `${BRANDS.flatMap(b => b.groups.flatMap(g => g.operations)).length}+`],
+              ["التقنية", "React 19 + Vite 6 + TS"],
+            ].map(([label, value]) => (
+              <div key={label} className="flex items-center justify-between bg-white/[0.02] rounded-lg px-3 py-2">
+                <span className="text-gray-400">{label}</span>
+                <span className="text-white font-mono font-semibold">{value}</span>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="bg-black/20 border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-xs font-bold text-white mb-3">أدوات خارجية مطلوبة</h3>
-          <div className="space-y-1.5 text-[10px]">
-            <div className="flex items-center gap-2"><span className="text-cyan-400 font-mono">ADB</span><span className="text-gray-400">— Android Debug Bridge</span></div>
-            <div className="flex items-center gap-2"><span className="text-cyan-400 font-mono">Fastboot</span><span className="text-gray-400">— أداة الفلاش عبر Bootloader</span></div>
-            <div className="flex items-center gap-2"><span className="text-cyan-400 font-mono">scrcpy</span><span className="text-gray-400">— التحكم بالشاشة عن بعد (اختياري)</span></div>
-            <div className="flex items-center gap-2"><span className="text-cyan-400 font-mono">QFIL</span><span className="text-gray-400">— فلاش Qualcomm EDL (اختياري)</span></div>
-            <div className="flex items-center gap-2"><span className="text-cyan-400 font-mono">SP Flash Tool</span><span className="text-gray-400">— فلاش MediaTek (اختياري)</span></div>
-            <div className="flex items-center gap-2"><span className="text-cyan-400 font-mono">Odin</span><span className="text-gray-400">— فلاش Samsung (اختياري)</span></div>
+        {/* Features */}
+        <div className="bg-[#161b22] rounded-xl p-5 border border-white/[0.06]">
+          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <HardDrive size={14} className="text-emerald-400" />
+            الميزات
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              "أدوات ADB/Fastboot المتقدمة",
+              "CDMA/QCDMA — NV/EFS/MCFG",
+              "إصلاح IMEI/MEID",
+              "إدارة الترددات (Band Selection)",
+              "VoLTE متقدم (DIAG/SPD/MTK)",
+              "تحويل CDMA/GSM",
+              "EDL فلاش متقدم",
+              "أوامر AT المباشرة",
+              "FRP Bypass شامل",
+              "نظام تذاكر الصيانة",
+              "إدارة المخزون والقطع",
+              "إدارة العملاء CRM",
+              "الفوترة والإيصالات",
+              "فحص IMEI + TAC",
+              "تقارير وإحصائيات",
+              "PWA جاهز للتثبيت",
+            ].map((f, i) => (
+              <div key={i} className="flex items-center gap-2 text-[10px] text-gray-300 bg-white/[0.02] rounded-lg px-3 py-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" /> {f}
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="bg-black/20 border border-white/[0.06] rounded-lg p-4">
-          <h3 className="text-xs font-bold text-white mb-3">شبكات اليمن المدعومة</h3>
-          <div className="space-y-1.5 text-[10px]">
-            <div className="flex items-center justify-between"><span className="text-white">يمن موبايل</span><span className="text-gray-400 font-mono">MCC:421 MNC:02</span></div>
-            <div className="flex items-center justify-between"><span className="text-white">سبأفون</span><span className="text-gray-400 font-mono">MCC:421 MNC:01</span></div>
-            <div className="flex items-center justify-between"><span className="text-white">يونيتل (YOU)</span><span className="text-gray-400 font-mono">MCC:421 MNC:04</span></div>
-            <div className="flex items-center justify-between"><span className="text-white">هيتس</span><span className="text-gray-400 font-mono">MCC:421 MNC:03</span></div>
+        {/* External Tools */}
+        <div className="bg-[#161b22] rounded-xl p-5 border border-white/[0.06]">
+          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <Terminal size={14} className="text-purple-400" />
+            أدوات خارجية
+          </h3>
+          <div className="space-y-2 text-[11px]">
+            {[
+              { tool: "ADB", desc: "Android Debug Bridge" },
+              { tool: "Fastboot", desc: "أداة الفلاش عبر Bootloader" },
+              { tool: "QPST", desc: "Qualcomm DIAG diagnostics" },
+              { tool: "scrcpy", desc: "التحكم بالشاشة عن بعد" },
+              { tool: "QFIL", desc: "فلاش Qualcomm EDL" },
+              { tool: "SP Flash Tool", desc: "فلاش MediaTek" },
+              { tool: "Odin", desc: "فلاش Samsung" },
+            ].map(({ tool, desc }) => (
+              <div key={tool} className="flex items-center gap-3 bg-white/[0.02] rounded-lg px-3 py-2">
+                <span className="text-blue-400 font-mono font-semibold w-24">{tool}</span>
+                <span className="text-gray-500">{desc}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Yemen Networks */}
+        <div className="bg-[#161b22] rounded-xl p-5 border border-white/[0.06]">
+          <h3 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <Wifi size={14} className="text-amber-400" />
+            شبكات اليمن
+          </h3>
+          <div className="space-y-2">
+            {[
+              { name: "يمن موبايل", code: "MCC:421 MNC:02", color: "text-blue-400" },
+              { name: "سبأفون", code: "MCC:421 MNC:01", color: "text-emerald-400" },
+              { name: "يونيتل (YOU)", code: "MCC:421 MNC:04", color: "text-purple-400" },
+              { name: "هيتس", code: "MCC:421 MNC:03", color: "text-amber-400" },
+            ].map(n => (
+              <div key={n.code} className="flex items-center justify-between bg-white/[0.02] rounded-lg px-3 py-2.5 text-[11px]">
+                <span className={`font-semibold ${n.color}`}>{n.name}</span>
+                <span className="text-gray-500 font-mono">{n.code}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
