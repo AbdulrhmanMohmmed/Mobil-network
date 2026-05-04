@@ -26,7 +26,20 @@ export function RepairTickets() {
   };
 
   const handleEdit = (t: RepairTicket) => {
-    setForm(t);
+    setForm({
+      customerName: t.customerName,
+      customerPhone: t.customerPhone,
+      imei: t.imei,
+      deviceBrand: t.deviceBrand,
+      deviceModel: t.deviceModel,
+      technicianName: t.technicianName,
+      issue: t.issue,
+      notes: t.notes,
+      priority: t.priority,
+      cost: t.cost,
+      partsCost: t.partsCost,
+      estimatedDate: t.estimatedDate,
+    });
     setEditId(t.id);
     setShowForm(true);
   };
