@@ -31,9 +31,9 @@ const DEVICE_MODELS = [
 ];
 
 const BRAND_ICONS: Record<string, string> = {
-  general: "⚙️", frp: "🛡️", cdma: "📡", qualcomm: "🔴", mtk: "🟠",
-  unisoc: "🟣", samsung: "🔵", xiaomi: "🟠", huawei: "🔴", oppo: "🟢",
-  tecno: "💙", vivo: "🟣", nokia: "📘",
+  general: "⚙️", simlock: "🔓", advanced: "🔧", frp: "🛡️", cdma: "📡",
+  qualcomm: "🔴", mtk: "🟠", unisoc: "🟣", samsung: "🔵", xiaomi: "🟠",
+  huawei: "🔴", oppo: "🟢", tecno: "💙", vivo: "🟣", nokia: "📘",
 };
 
 type Lang = "ar" | "en";
@@ -554,19 +554,19 @@ function SettingsPanel({ lang }: { lang: Lang }) {
           </h3>
           <div className="grid grid-cols-2 gap-2">
             {[
+              "كشف قفل الشبكة (SIM Lock)",
+              "فك قفل الشبكة (NCK/ADB/DIAG)",
+              "فحص توافق ترددات اليمن",
+              "إدارة eSIM والشرائح الإلكترونية",
+              "كشف شريحة R-SIM/Gevey الوسيطة",
               "أدوات ADB/Fastboot المتقدمة",
               "CDMA/QCDMA — NV/EFS/MCFG",
-              "إصلاح IMEI/MEID",
-              "إدارة الترددات (Band Selection)",
-              "VoLTE متقدم (DIAG/SPD/MTK)",
-              "تحويل CDMA/GSM",
-              "EDL فلاش متقدم",
-              "أوامر AT المباشرة",
+              "فلاش Modem/Boot/Recovery",
+              "Root وإدارة الصلاحيات",
+              "إزالة MDM/Knox",
               "FRP Bypass شامل",
-              "نظام تذاكر الصيانة",
-              "إدارة المخزون والقطع",
-              "إدارة العملاء CRM",
-              "الفوترة والإيصالات",
+              "VoLTE متقدم (DIAG/SPD/MTK)",
+              "نظام إدارة المحل الكامل",
               "فحص IMEI + TAC",
               "تقارير وإحصائيات",
               "PWA جاهز للتثبيت",

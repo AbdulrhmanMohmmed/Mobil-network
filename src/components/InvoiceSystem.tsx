@@ -70,7 +70,7 @@ ${inv.items.map(i => `<tr><td>${esc(i.name)}</td><td>${i.quantity}</td><td>${i.u
 <div>الخصم: ${inv.discount} ر.ي</div>
 <div class="total">الإجمالي: ${inv.total.toLocaleString()} ر.ي</div>
 <div>طريقة الدفع: ${inv.paymentMethod === "cash" ? "نقدي" : inv.paymentMethod === "transfer" ? "تحويل" : "آجل"}</div>
-<div class="footer">شكراً لتعاملكم معنا — Yemen Mobile Dev Tool v3.0</div></body></html>`;
+<div class="footer">شكراً لتعاملكم معنا — Yemen Mobile Dev Tool v4.0</div></body></html>`;
     const w = window.open("", "_blank");
     if (w) { w.document.write(printContent); w.document.close(); w.print(); }
   };

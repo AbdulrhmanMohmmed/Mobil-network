@@ -736,9 +736,128 @@ const CDMA_GROUPS: OperationGroup[] = [
   },
 ];
 
+// ─── SIM LOCK / NETWORK LOCK — كشف قفل الشبكة وفكه ─────────────────────────
+const SIMLOCK_GROUPS: OperationGroup[] = [
+  {
+    id: "simlock_detect",
+    titleAr: "كشف قفل الشبكة (Network Lock Detection)",
+    operations: [
+      { id: "sl_check_status", labelAr: "فحص حالة القفل", label: "Check Lock Status", color: "cyan", description: "فحص شامل لحالة قفل الشبكة — يكشف إذا كان الهاتف مقفل على شبكة معينة أو مفتوح", isScan: true, commands: ["adb shell service call phone 14", "adb shell getprop gsm.sim.operator.alpha", "adb shell getprop gsm.operator.alpha", "adb shell getprop persist.sys.oem_unlock_allowed", "adb shell settings get global device_provisioned", "adb shell dumpsys telephony.registry | grep mServiceState", "adb shell content query --uri content://telephony/carriers --projection name,mcc,mnc,type", "echo 'Analyzing SIM/Network lock status...'"] },
+      { id: "sl_check_samsung", labelAr: "فحص قفل Samsung", label: "Samsung Lock Check", color: "blue", description: "فحص حالة قفل الشبكة لأجهزة Samsung عبر أكواد الخدمة", commands: ["adb shell am start -a android.intent.action.DIAL -d 'tel:*%237465625%23'", "adb shell getprop ro.boot.carrierid", "adb shell getprop ro.csc.sales_code", "adb shell getprop ril.officialcsc", "echo 'Samsung SIM Lock status codes displayed on device'"] },
+      { id: "sl_check_pixel", labelAr: "فحص قفل Pixel", label: "Pixel Lock Check", color: "blue", description: "فحص حالة قفل الشبكة لأجهزة Google Pixel", commands: ["adb shell getprop ro.boot.cid", "adb shell getprop ro.boot.carrier", "adb shell settings get global carrier_app_names", "adb shell dumpsys carrier_config | grep carrier_lock", "echo 'Pixel carrier lock analysis complete'"] },
+      { id: "sl_read_nck_count", labelAr: "عدد محاولات NCK المتبقية", label: "NCK Attempts Left", color: "yellow", description: "قراءة عدد محاولات إدخال كود فك القفل المتبقية — مهم قبل محاولة الفك", commands: ["adb shell service call phone 14", "adb shell dumpsys telephony.registry | grep 'mSimState'", "echo 'WARNING: إذا نفدت المحاولات سيتم قفل الهاتف نهائياً'", "echo 'Reading NCK remaining attempts...'"] },
+      { id: "sl_detect_rsim", labelAr: "كشف شريحة وسيطة R-SIM", label: "Detect R-SIM/Gevey", color: "purple", description: "كشف إذا كان الهاتف يستخدم شريحة وسيطة (R-SIM/Gevey/RSIM) للتحايل على قفل الشبكة", isScan: true, commands: ["adb shell getprop gsm.sim.operator.alpha", "adb shell getprop gsm.sim.operator.numeric", "adb shell service call iphonesubinfo 3", "adb shell dumpsys telephony.registry | grep mIccId", "echo 'Analyzing SIM interposer indicators...'", "echo 'Checking ICCID pattern for R-SIM/Gevey signatures...'"] },
+      { id: "sl_check_bands", labelAr: "فحص توافق الترددات مع اليمن", label: "Yemen Band Compatibility", color: "green", description: "فحص إذا كان الهاتف يدعم ترددات شبكات اليمن (Band 3/7/20/28 LTE + Band 1/8 3G + 900/1800MHz 2G)", isScan: true, commands: ["adb shell getprop gsm.baseband.channel", "adb shell getprop gsm.network.type", "adb shell settings get global preferred_network_mode", "adb shell dumpsys telephony.registry | grep mSignalStrength", "echo 'Yemen Networks Required Bands:'", "echo 'LTE: Band 3 (1800MHz), Band 7 (2600MHz)'", "echo '3G: Band 1 (2100MHz), Band 8 (900MHz)'", "echo '2G: GSM 900MHz, GSM 1800MHz'", "echo 'CDMA: Band Class 0 (800MHz), Band Class 6 (2GHz)'"] },
+    ],
+  },
+  {
+    id: "simlock_unlock",
+    titleAr: "فك قفل الشبكة (Network Unlock)",
+    operations: [
+      { id: "sl_nck_unlock", labelAr: "فك بكود NCK", label: "NCK Code Unlock", color: "green", description: "إدخال كود فك قفل الشبكة (NCK/Network Control Key) — تحتاج الكود من مزود الخدمة أو خدمة فك القفل", commands: ["echo 'أدخل كود NCK على شاشة الجهاز عند طلبه'", "echo 'إذا لم يظهر طلب الكود، أدخل SIM من شبكة مختلفة وأعد التشغيل'", "adb shell am start -a android.intent.action.DIAL -d 'tel:*%237465625%23'", "echo 'NCK unlock prompt activated'"] },
+      { id: "sl_samsung_unlock", labelAr: "فك قفل Samsung (ADB)", label: "Samsung ADB Unlock", color: "blue", description: "فك قفل الشبكة لأجهزة Samsung عبر أوامر ADB — يعمل مع بعض الموديلات", commands: ["adb shell pm disable-user --user 0 com.samsung.android.kgclient", "adb shell pm uninstall --user 0 com.samsung.android.kgclient", "adb shell settings put system OPTION_SCREEN_LOCK 1", "adb shell pm disable-user --user 0 com.sec.enterprise.knox.cloudmdm.smdms", "adb shell pm uninstall --user 0 com.sec.enterprise.knox.cloudmdm.smdms", "echo 'Samsung KnoxGuard/Carrier lock disabled — reboot required'", "adb reboot"] },
+      { id: "sl_samsung_region", labelAr: "إزالة قيود المنطقة Samsung", label: "Samsung Region Unlock", color: "blue", description: "إزالة قيود المنطقة (REG_LOCK) لأجهزة Samsung التي تتطلب SIM محلي أولاً", commands: ["adb shell pm disable-user --user 0 com.samsung.android.svl", "adb shell pm uninstall --user 0 com.samsung.android.svl", "adb shell settings put system SIM_REGION_LOCK 0", "echo 'Samsung region/SIM lock removed'", "adb reboot"] },
+      { id: "sl_pixel_unlock", labelAr: "فك قفل Pixel مؤقت", label: "Pixel Temp Unlock", color: "green", description: "فك قفل مؤقت لأجهزة Google Pixel عبر ADB — يعمل مع Android 13/14", commands: ["echo 'خطوة 1: إزالة حساب Google'", "echo 'خطوة 2: Factory Reset + Offline Setup'", "echo 'خطوة 3: تفعيل USB Debugging'", "adb shell settings put global device_provisioned 1", "adb shell content insert --uri content://settings/secure --bind name:s:user_setup_complete --bind value:s:1", "echo 'Pixel temporary network unlock applied'", "adb reboot"] },
+      { id: "sl_at_unlock", labelAr: "فك بأوامر AT", label: "AT Command Unlock", color: "orange", description: "محاولة فك قفل الشبكة عبر أوامر AT المباشرة عبر منفذ DIAG", commands: ["adb shell setprop persist.sys.usb.config diag,adb", "echo 'AT+CLCK=\"PN\",0,\"NCK_CODE\"\\r' > /dev/smd8", "echo 'AT+CLCK=\"PU\",0,\"NCK_CODE\"\\r' > /dev/smd8", "echo 'AT+CLCK=\"PP\",0,\"NCK_CODE\"\\r' > /dev/smd8", "echo 'Replace NCK_CODE with actual unlock code'"] },
+      { id: "sl_diag_unlock", labelAr: "فك عبر DIAG Mode", label: "DIAG Port Unlock", color: "red", description: "فك قفل الشبكة عبر منفذ DIAG — يتطلب أدوات QPST/QXDM إضافية", requiresRoot: true, commands: ["adb shell setprop persist.sys.usb.config diag,adb", "adb shell setprop sys.usb.config diag,adb", "echo 'DIAG port enabled — use QPST/DFS to write NV items'", "echo 'NV Item 1192: Network Lock Status'", "echo 'NV Item 6502: Carrier Lock Configuration'", "echo 'Connect via QPST and modify lock NV items'"] },
+    ],
+  },
+  {
+    id: "simlock_carrier",
+    titleAr: "إدارة الشبكة والكارير (Carrier Management)",
+    operations: [
+      { id: "sl_force_carrier", labelAr: "فرض شبكة يدوياً", label: "Force Carrier", color: "blue", description: "فرض الاتصال بشبكة معينة يدوياً — مفيد عند عدم التعرف على الشبكة تلقائياً", commands: ["adb shell settings put global preferred_network_mode 9", "adb shell am start -a android.intent.action.MAIN -n com.android.settings/.RadioInfo", "echo 'Open RadioInfo → Select network manually'", "echo 'Yemen Mobile: 42102 | Sabafon: 42101 | YOU: 42104 | Hits: 42103'"] },
+      { id: "sl_set_yemen_apn", labelAr: "ضبط APN شبكات اليمن", label: "Set Yemen APNs", color: "green", description: "ضبط إعدادات APN لجميع شبكات اليمن تلقائياً", commands: ["adb shell content insert --uri content://telephony/carriers --bind name:s:YemenMobile --bind numeric:s:42102 --bind mcc:s:421 --bind mnc:s:02 --bind apn:s:ymobile --bind type:s:default,supl,mms --bind user:s:ymobile --bind password:s:ymobile", "adb shell content insert --uri content://telephony/carriers --bind name:s:Sabafon --bind numeric:s:42101 --bind mcc:s:421 --bind mnc:s:01 --bind apn:s:sabafon --bind type:s:default,supl,mms", "adb shell content insert --uri content://telephony/carriers --bind name:s:YOU --bind numeric:s:42104 --bind mcc:s:421 --bind mnc:s:04 --bind apn:s:you --bind type:s:default,supl,mms", "adb shell content insert --uri content://telephony/carriers --bind name:s:Hits --bind numeric:s:42103 --bind mcc:s:421 --bind mnc:s:03 --bind apn:s:hits --bind type:s:default,supl,mms", "echo 'Yemen APNs configured for all 4 carriers'"] },
+      { id: "sl_set_mcc_mnc", labelAr: "ضبط MCC/MNC يدوياً", label: "Set MCC/MNC Manual", color: "orange", description: "ضبط رمز الدولة والشبكة يدوياً — لحل مشاكل عدم التعرف على الشبكة", commands: ["adb shell settings put global mcc 421", "adb shell setprop gsm.sim.operator.numeric 42102", "adb shell setprop persist.radio.plmn 42102", "echo 'MCC/MNC set to 421/02 (Yemen Mobile)'", "echo 'Change 02 to: 01=Sabafon, 04=YOU, 03=Hits'"] },
+      { id: "sl_clear_carrier", labelAr: "مسح بيانات الكارير", label: "Clear Carrier Data", color: "red", description: "مسح جميع بيانات الكارير المخزنة — يحل مشاكل التعرف على الشبكة بعد تغيير SIM", commands: ["adb shell pm clear com.android.phone", "adb shell pm clear com.android.providers.telephony", "adb shell settings delete global preferred_network_mode", "adb shell content delete --uri content://telephony/carriers", "echo 'Carrier data cleared — reboot required'", "adb reboot"] },
+      { id: "sl_fix_no_service", labelAr: "إصلاح 'لا توجد خدمة'", label: "Fix No Service", color: "red", description: "إصلاح مشكلة 'لا توجد خدمة' أو 'الشبكة غير متوفرة' — شائعة بعد التحديث أو تغيير SIM", commands: ["adb shell settings put global airplane_mode_on 1", "adb shell am broadcast -a android.intent.action.AIRPLANE_MODE", "adb shell settings put global preferred_network_mode 9", "adb shell settings put global airplane_mode_on 0", "adb shell am broadcast -a android.intent.action.AIRPLANE_MODE", "adb shell pm clear com.android.phone", "echo 'Network reset applied — wait for registration'"] },
+    ],
+  },
+  {
+    id: "simlock_esim",
+    titleAr: "إدارة eSIM والشرائح الإلكترونية",
+    operations: [
+      { id: "sl_esim_check", labelAr: "فحص دعم eSIM", label: "Check eSIM Support", color: "cyan", description: "فحص إذا كان الجهاز يدعم eSIM (الشريحة الإلكترونية المدمجة)", isScan: true, commands: ["adb shell getprop persist.vendor.radio.enableesim", "adb shell getprop gsm.euicc.supported", "adb shell dumpsys euicc", "adb shell pm list features | grep euicc", "echo 'Checking eSIM/eUICC hardware support...'"] },
+      { id: "sl_esim_list", labelAr: "عرض eSIM المثبتة", label: "List eSIM Profiles", color: "blue", description: "عرض جميع ملفات eSIM المثبتة على الجهاز", commands: ["adb shell dumpsys euicc", "adb shell content query --uri content://telephony/siminfo", "echo 'Listing installed eSIM profiles...'"] },
+      { id: "sl_esim_enable", labelAr: "تفعيل eSIM", label: "Enable eSIM", color: "green", description: "تفعيل شريحة eSIM مثبتة مسبقاً", commands: ["adb shell am start -a android.telephony.euicc.action.MANAGE_EMBEDDED_SUBSCRIPTIONS", "echo 'eSIM management screen opened'", "echo 'Select profile to enable from the list'"] },
+      { id: "sl_esim_reset", labelAr: "إعادة تعيين eSIM", label: "Reset eSIM", color: "red", description: "إعادة تعيين جميع ملفات eSIM — حذف جميع الشرائح الإلكترونية المثبتة", commands: ["adb shell pm clear com.android.euicc", "adb shell pm clear com.google.euiccpixel", "echo 'WARNING: This will remove all eSIM profiles!'", "echo 'eSIM chip reset — add profiles again from carrier'"] },
+    ],
+  },
+  {
+    id: "simlock_diagnosis",
+    titleAr: "تشخيص مشاكل SIM والشبكة",
+    operations: [
+      { id: "sl_sim_full_scan", labelAr: "فحص شامل لحالة SIM", label: "Full SIM Diagnostic", color: "cyan", description: "تشخيص شامل لمشاكل SIM — يفحص القفل والتوافق والترددات والشبكة", isScan: true, commands: ["adb shell getprop gsm.sim.state", "adb shell getprop gsm.sim.operator.alpha", "adb shell getprop gsm.sim.operator.numeric", "adb shell service call iphonesubinfo 1", "adb shell service call iphonesubinfo 3", "adb shell dumpsys telephony.registry | grep mServiceState", "adb shell dumpsys telephony.registry | grep mSignalStrength", "adb shell settings get global preferred_network_mode", "adb shell dumpsys carrier_config", "echo 'Complete SIM diagnostic analysis...'"] },
+      { id: "sl_baseband_check", labelAr: "فحص Baseband/Modem", label: "Baseband Check", color: "yellow", description: "فحص حالة Baseband — إذا كان تالف لن يعمل أي SIM", isScan: true, commands: ["adb shell getprop gsm.version.baseband", "adb shell getprop gsm.version.ril-impl", "adb shell getprop ro.baseband", "adb shell getprop persist.radio.multisim.config", "echo 'Checking baseband/modem firmware health...'"] },
+      { id: "sl_fix_baseband", labelAr: "إصلاح Baseband Unknown", label: "Fix Unknown Baseband", color: "red", description: "محاولة إصلاح مشكلة 'Baseband Unknown' — سبب شائع لعدم التعرف على SIM", commands: ["adb shell am broadcast -a android.intent.action.MASTER_CLEAR", "echo 'WARNING: This may require reflashing modem partition'", "adb shell setprop gsm.version.baseband ''", "adb reboot recovery", "echo 'If baseband still unknown: reflash modem.img via fastboot'"] },
+      { id: "sl_fix_invalid_imei", labelAr: "إصلاح IMEI فارغ/غير صالح", label: "Fix Invalid/Null IMEI", color: "red", description: "إصلاح IMEI فارغ أو غير صالح — سبب رئيسي لمشكلة 'لا توجد خدمة'", commands: ["adb shell service call iphonesubinfo 1", "echo 'If IMEI shows null/0/invalid:'", "echo '1. Check EFS partition: adb shell ls -la /efs/'", "echo '2. Restore EFS backup if available'", "echo '3. For Qualcomm: use QPST to write NV Item 550 (IMEI)'", "echo '4. For Samsung: use Odin to flash CERT partition'", "echo '5. For MTK: use SP Flash Tool to write NVRAM'"] },
+      { id: "sl_network_log", labelAr: "سجل أحداث الشبكة", label: "Network Event Log", color: "gray", description: "عرض سجل أحداث الشبكة التفصيلي — مفيد لتشخيص مشاكل الاتصال", commands: ["adb shell logcat -d -s TelephonyManager", "adb shell logcat -d -s RIL", "adb shell logcat -d -s ServiceState", "adb shell dumpsys telephony.registry | grep -E 'mService|mSignal|mData|mCell'", "echo 'Network event log captured'"] },
+    ],
+  },
+];
+
+// ─── أدوات البرمجة المتقدمة (Advanced Programming Tools) ─────────────────────
+const ADVANCED_GROUPS: OperationGroup[] = [
+  {
+    id: "adv_firmware",
+    titleAr: "فلاش وبرمجة Firmware",
+    operations: [
+      { id: "adv_edl_mode", labelAr: "الدخول لوضع EDL 9008", label: "Enter EDL Mode", color: "red", description: "إدخال الجهاز لوضع Emergency Download (EDL 9008) — للفلاش على مستوى الشريحة", commands: ["adb reboot edl", "echo 'If ADB not available, try:'", "echo 'fastboot oem edl'", "echo 'Or: Hold Vol+ Vol- while connecting USB cable'", "echo 'Device should appear as Qualcomm HS-USB QDLoader 9008'"] },
+      { id: "adv_fastboot_mode", labelAr: "الدخول لوضع Fastboot", label: "Enter Fastboot", color: "orange", description: "إدخال الجهاز لوضع Fastboot للفلاش والتعديل", commands: ["adb reboot bootloader", "echo 'Waiting for fastboot...'", "fastboot devices", "fastboot getvar all"] },
+      { id: "adv_flash_modem", labelAr: "فلاش Modem/Baseband", label: "Flash Modem", color: "red", description: "فلاش firmware الـ Modem/Baseband — يحل مشاكل الشبكة الجذرية", requiresRoot: true, commands: ["fastboot flash modem modem.img", "echo 'Or for Samsung: Odin → AP → modem.bin'", "echo 'Or for MTK: SP Flash Tool → Download → modem partition'", "echo 'WARNING: Wrong modem can permanently damage network!'", "fastboot reboot"] },
+      { id: "adv_flash_boot", labelAr: "فلاش Boot Image", label: "Flash Boot", color: "red", description: "فلاش ملف boot.img — يستخدم لتحديث kernel أو إصلاح bootloop", requiresRoot: true, commands: ["fastboot flash boot boot.img", "fastboot reboot", "echo 'Boot image flashed successfully'"] },
+      { id: "adv_flash_recovery", labelAr: "فلاش Recovery", label: "Flash Recovery", color: "orange", description: "فلاش Custom Recovery (TWRP/OrangeFox) أو Stock Recovery", commands: ["fastboot flash recovery recovery.img", "echo 'Or for Samsung: Odin → AP → recovery.tar'", "echo 'To boot directly: fastboot boot recovery.img'", "fastboot reboot recovery"] },
+      { id: "adv_unlock_bootloader", labelAr: "فتح Bootloader", label: "Unlock Bootloader", color: "red", description: "فتح Bootloader — مطلوب لعمليات الفلاش المتقدمة والروت", requiresRoot: true, commands: ["adb shell settings put global development_settings_enabled 1", "echo 'Enable OEM Unlock in Developer Options first!'", "adb reboot bootloader", "fastboot flashing unlock", "echo 'WARNING: This will ERASE ALL DATA on device!'", "echo 'Confirm unlock on device screen'"] },
+    ],
+  },
+  {
+    id: "adv_root",
+    titleAr: "Root وإدارة الصلاحيات",
+    operations: [
+      { id: "adv_check_root", labelAr: "فحص حالة Root", label: "Check Root Status", color: "cyan", description: "فحص إذا كان الجهاز يملك صلاحيات Root", isScan: true, commands: ["adb shell su -c 'whoami'", "adb shell su -c 'id'", "adb shell getprop ro.build.selinux", "adb shell getprop ro.debuggable", "echo 'Checking root/superuser status...'"] },
+      { id: "adv_magisk_install", labelAr: "تثبيت Magisk (Root)", label: "Magisk Install Guide", color: "green", description: "دليل تثبيت Magisk للحصول على Root — أفضل وأأمن طريقة", commands: ["echo 'خطوات تثبيت Magisk:'", "echo '1. حمّل Magisk APK من: https://github.com/topjohnwu/Magisk'", "echo '2. ثبت APK على الجهاز: adb install Magisk.apk'", "echo '3. استخرج boot.img من الـ firmware'", "echo '4. افتح Magisk → Install → Patch boot image'", "echo '5. انسخ الملف المعدل: adb pull /sdcard/Download/magisk_patched.img'", "echo '6. فلاش: fastboot flash boot magisk_patched.img'", "echo '7. أعد التشغيل وافتح Magisk للتأكيد'"] },
+      { id: "adv_disable_verity", labelAr: "تعطيل DM-Verity", label: "Disable DM-Verity", color: "orange", description: "تعطيل التحقق من النظام — مطلوب لتعديل system partition", requiresRoot: true, commands: ["adb disable-verity", "adb reboot", "echo 'DM-Verity disabled — system partition now writable'"] },
+      { id: "adv_remount_system", labelAr: "فتح System للكتابة", label: "Remount System RW", color: "orange", description: "فتح قسم System للكتابة — لتعديل ملفات النظام", requiresRoot: true, commands: ["adb root", "adb remount", "echo 'System mounted as read-write'", "echo 'You can now push/modify files in /system/'"] },
+    ],
+  },
+  {
+    id: "adv_partition",
+    titleAr: "إدارة الأقسام (Partitions)",
+    operations: [
+      { id: "adv_list_partitions", labelAr: "عرض جدول الأقسام", label: "List Partitions", color: "cyan", description: "عرض جميع أقسام الذاكرة (partitions) في الجهاز", isScan: true, commands: ["adb shell ls -la /dev/block/by-name/", "adb shell cat /proc/partitions", "echo 'Partition table listed'"] },
+      { id: "adv_backup_partition", labelAr: "نسخ احتياطي لقسم", label: "Backup Partition", color: "green", description: "نسخ احتياطي لقسم معين (مثل EFS, modem, boot)", commands: ["echo 'Usage: adb shell dd if=/dev/block/by-name/PARTITION of=/sdcard/PARTITION.img'", "echo 'Common partitions to backup:'", "echo '  efs → IMEI/calibration data'", "echo '  modem → network firmware'", "echo '  boot → kernel + ramdisk'", "echo '  recovery → recovery system'", "echo 'Example: adb shell dd if=/dev/block/by-name/efs of=/sdcard/efs_backup.img'"] },
+      { id: "adv_restore_partition", labelAr: "استعادة قسم", label: "Restore Partition", color: "orange", description: "استعادة قسم من نسخة احتياطية سابقة", requiresRoot: true, commands: ["echo 'Usage: adb shell dd if=/sdcard/PARTITION.img of=/dev/block/by-name/PARTITION'", "echo 'WARNING: Wrong partition restore can BRICK the device!'", "echo 'Always verify partition name before restoring'", "echo 'Example: adb shell dd if=/sdcard/efs_backup.img of=/dev/block/by-name/efs'"] },
+      { id: "adv_wipe_frp", labelAr: "مسح قسم FRP", label: "Wipe FRP Partition", color: "red", description: "مسح قسم حماية إعادة التعيين (FRP)", requiresRoot: true, commands: ["fastboot erase frp", "echo 'Or via ADB root:'", "adb shell dd if=/dev/zero of=/dev/block/by-name/frp bs=4096", "echo 'FRP partition wiped'", "adb reboot"] },
+    ],
+  },
+  {
+    id: "adv_debug",
+    titleAr: "تشخيص وتحليل متقدم",
+    operations: [
+      { id: "adv_full_diagnostic", labelAr: "تشخيص شامل للجهاز", label: "Full Device Diagnostic", color: "cyan", description: "تشخيص شامل يفحص جميع مكونات الجهاز — الأجهزة والبرمجيات والشبكة", isScan: true, commands: ["adb shell getprop ro.product.model", "adb shell getprop ro.build.version.release", "adb shell getprop gsm.version.baseband", "adb shell dumpsys battery", "adb shell dumpsys display | grep mScreenState", "adb shell df /data | tail -1", "adb shell cat /proc/meminfo | head -3", "adb shell cat /proc/cpuinfo | grep 'Hardware'", "adb shell dumpsys telephony.registry | grep mServiceState", "adb shell getprop gsm.sim.state", "echo 'Complete device diagnostic scan...'"] },
+      { id: "adv_bugreport", labelAr: "تقرير الأخطاء الكامل", label: "Generate Bug Report", color: "yellow", description: "إنشاء تقرير أخطاء شامل — مفيد لتشخيص المشاكل المعقدة", commands: ["adb bugreport /sdcard/bugreport.zip", "adb pull /sdcard/bugreport.zip ./bugreport.zip", "echo 'Bug report generated and saved'"] },
+      { id: "adv_logcat_live", labelAr: "سجل النظام المباشر", label: "Live Logcat", color: "gray", description: "عرض سجل النظام المباشر — لمتابعة الأخطاء لحظياً", commands: ["adb logcat -d *:E | tail -50", "echo 'Error log captured — last 50 errors'"] },
+      { id: "adv_thermal_check", labelAr: "فحص الحرارة", label: "Thermal Check", color: "yellow", description: "فحص درجة حرارة جميع مكونات الجهاز", isScan: true, commands: ["adb shell dumpsys battery | grep temperature", "adb shell cat /sys/class/thermal/thermal_zone*/temp 2>/dev/null", "echo 'Thermal sensor readings captured'"] },
+      { id: "adv_sensor_test", labelAr: "فحص الحساسات", label: "Sensor Test", color: "cyan", description: "فحص جميع حساسات الجهاز (accelerometer, gyro, proximity, etc.)", isScan: true, commands: ["adb shell dumpsys sensorservice | grep 'sensor'", "echo 'Sensor list captured — check which sensors are active/available'"] },
+    ],
+  },
+  {
+    id: "adv_security",
+    titleAr: "أمان وحماية",
+    operations: [
+      { id: "adv_mdm_remove", labelAr: "إزالة MDM (إدارة الأجهزة)", label: "Remove MDM", color: "red", description: "إزالة ملفات إدارة الأجهزة (MDM) — الهواتف المؤسسية/الشركات", commands: ["adb shell pm list packages | grep -i mdm", "adb shell pm uninstall --user 0 com.samsung.android.mdm", "adb shell pm disable-user --user 0 com.sec.enterprise.knox.cloudmdm.smdms", "adb shell dpm remove-active-admin com.samsung.android.mdm/.DeviceAdminReceiver", "echo 'MDM profiles removed — reboot required'", "adb reboot"] },
+      { id: "adv_knox_remove", labelAr: "إزالة Knox", label: "Remove Knox", color: "red", description: "إزالة Samsung Knox — يحل مشاكل القفل المؤسسي", commands: ["adb shell pm disable-user --user 0 com.samsung.android.knox.analytics.uploader", "adb shell pm disable-user --user 0 com.samsung.android.knox.containercore", "adb shell pm disable-user --user 0 com.samsung.android.knox.kpe", "adb shell pm disable-user --user 0 com.samsung.klmsagent", "echo 'Knox components disabled'", "adb reboot"] },
+      { id: "adv_disable_bloat", labelAr: "إزالة التطبيقات الزائدة", label: "Remove Bloatware", color: "orange", description: "إزالة التطبيقات المثبتة مسبقاً التي لا يمكن حذفها من الإعدادات", commands: ["adb shell pm list packages -d", "echo 'Usage: adb shell pm uninstall --user 0 com.package.name'", "echo 'Common bloatware to remove:'", "echo '  Facebook: com.facebook.system, com.facebook.appmanager'", "echo '  Netflix: com.netflix.partner.activation'", "echo '  Carrier apps: varies by carrier'", "echo 'WARNING: Do NOT remove system-critical packages!'"] },
+      { id: "adv_bypass_setup", labelAr: "تجاوز شاشة الإعداد", label: "Bypass Setup Wizard", color: "orange", description: "تجاوز شاشة الإعداد الأولى — مفيد بعد Factory Reset", commands: ["adb shell settings put global device_provisioned 1", "adb shell content insert --uri content://settings/secure --bind name:s:user_setup_complete --bind value:s:1", "adb shell pm disable-user --user 0 com.google.android.setupwizard", "echo 'Setup wizard bypassed'", "adb reboot"] },
+    ],
+  },
+];
+
 // ─── BRANDS EXPORT ───────────────────────────────────────────────────────────
 export const BRANDS: Brand[] = [
   { id: "general",   name: "General",             nameAr: "عام",                    chipset: "All Chipsets",              color: "#3B82F6", groups: GENERAL_GROUPS },
+  { id: "simlock",   name: "SIM Lock / Network",  nameAr: "قفل الشبكة / SIM Lock", chipset: "All Devices",               color: "#EF4444", groups: SIMLOCK_GROUPS },
+  { id: "advanced",  name: "Advanced Tools",       nameAr: "أدوات متقدمة",          chipset: "All Chipsets",              color: "#8B5CF6", groups: ADVANCED_GROUPS },
   { id: "frp",       name: "FRP — All Brands",    nameAr: "FRP — كل الماركات",     chipset: "Universal",                 color: "#059669", groups: FRP_GROUPS },
   { id: "cdma",      name: "CDMA / QCDMA",        nameAr: "CDMA / QCDMA",          chipset: "Qualcomm DIAG",             color: "#F59E0B", groups: CDMA_GROUPS },
   { id: "qualcomm",  name: "Qualcomm / Snapdragon",nameAr: "Qualcomm / Snapdragon", chipset: "Snapdragon",                color: "#D40000", groups: QUALCOMM_GROUPS },
