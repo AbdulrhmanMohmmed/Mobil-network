@@ -31,9 +31,11 @@ const DEVICE_MODELS = [
 ];
 
 const BRAND_ICONS: Record<string, string> = {
-  general: "⚙️", simlock: "🔓", advanced: "🔧", frp: "🛡️", cdma: "📡",
-  qualcomm: "🔴", mtk: "🟠", unisoc: "🟣", samsung: "🔵", xiaomi: "🟠",
-  huawei: "🔴", oppo: "🟢", tecno: "💙", vivo: "🟣", nokia: "📘",
+  general: "⚙️", arabization: "🌍", imei_repair: "🔢", accounts: "🔐", simlock: "🔓",
+  volte_net: "📶", data_recovery: "💾", hw_diag: "🩺", flash_adv: "⚡", codes: "🔑",
+  samsung_pro: "🔵", motorola: "Ⓜ️", smart_tools: "🧠", advanced: "🔧",
+  frp: "🛡️", cdma: "📡", qualcomm: "🔴", mtk: "🟠", unisoc: "🟣",
+  samsung: "🔵", xiaomi: "🟠", huawei: "🔴", oppo: "🟢", tecno: "💙", vivo: "🟣", nokia: "📘",
 };
 
 type Lang = "ar" | "en";
@@ -554,22 +556,26 @@ function SettingsPanel({ lang }: { lang: Lang }) {
           </h3>
           <div className="grid grid-cols-2 gap-2">
             {[
-              "كشف قفل الشبكة (SIM Lock)",
-              "فك قفل الشبكة (NCK/ADB/DIAG)",
-              "فحص توافق ترددات اليمن",
-              "إدارة eSIM والشرائح الإلكترونية",
-              "كشف شريحة R-SIM/Gevey الوسيطة",
-              "أدوات ADB/Fastboot المتقدمة",
+              "تعريب الهواتف (CSC/Locale/ROM)",
+              "إصلاح IMEI (QC/MTK/SPD/Samsung)",
+              "إزالة حسابات (Mi/Huawei/Samsung/OPPO)",
+              "كشف وفك قفل الشبكة (SIM Lock)",
+              "VoLTE متقدم (DIAG/MTK/SPD)",
+              "استعادة البيانات (Recovery)",
+              "تشخيص الهاردوير (شاشة/بطارية/حساسات)",
+              "فلاش متقدم (Odin/SP Flash/QFIL/EDL)",
+              "أكواد وكلمات مرور (PIN/FRP/NCK)",
+              "Samsung متخصص (DRK/CSC/Knox)",
+              "Motorola (VoLTE/FRP/Bootloader)",
+              "أدوات ذكية (أصالة/تقرير/IMEI)",
               "CDMA/QCDMA — NV/EFS/MCFG",
-              "فلاش Modem/Boot/Recovery",
-              "Root وإدارة الصلاحيات",
-              "إزالة MDM/Knox",
-              "FRP Bypass شامل",
-              "VoLTE متقدم (DIAG/SPD/MTK)",
+              "FRP Bypass شامل (كل الماركات)",
               "نظام إدارة المحل الكامل",
-              "فحص IMEI + TAC",
+              "فحص IMEI + TAC + Blacklist",
               "تقارير وإحصائيات",
               "PWA جاهز للتثبيت",
+              "600+ عملية برمجة",
+              "26 قسم متخصص",
             ].map((f, i) => (
               <div key={i} className="flex items-center gap-2 text-[10px] text-gray-300 bg-white/[0.02] rounded-lg px-3 py-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" /> {f}
